@@ -173,15 +173,6 @@ public class DAF {
         return true;
     }
 
-    public boolean completeGivenAdmissible (ArgSet set) {
-        for (String a: args) {
-            if (!set.contains (a) && acceptable (set, a)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public boolean complete (ArgSet set) {
         return conflictFree (set) && completeGivenConflictFree (set);
     }
@@ -214,13 +205,9 @@ public class DAF {
         return admissible(set) && preferredHelper (new ArgSet (set), null);
     }
 
-    public boolean preferredGivenConflictFree (ArgSet set) {
-        return admissibleGivenConflictFree(set) && preferredHelper (new ArgSet (set), null);
-    }
 
-    public boolean preferredGivenAdmissible (ArgSet set) {
-        return preferredHelper (new ArgSet (set), null);
-    }
+
+
 
     public ArgSet initial () {
         ArgSet set = new ArgSet ();
@@ -271,13 +258,6 @@ public class DAF {
         return groundedSet().equals (set);
     }
 
-    public boolean groundedGivenConflictFree (ArgSet set) {
-        return grounded (set);
-    }
-
-    public boolean groundedGivenAdmissible (ArgSet set) {
-        return grounded (set);
-    }
 
     public String toString () {
         StringBuilder b = new StringBuilder();
