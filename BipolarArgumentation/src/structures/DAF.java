@@ -1,17 +1,18 @@
 package structures;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class DAF {
-    double weight = 1;
+    double  weight = 1;
         
-    public ArgSet args = new ArgSet();
-    public HashMap<String,ArgSet> defeats = new HashMap<String,ArgSet>();
-    public HashMap<String,ArgSet> defeatedBy = new HashMap<String,ArgSet>();
-    public static ArgSet emptySet = new ArgSet ();
+    protected ArgSet args = new ArgSet();
+    protected HashMap<String,ArgSet> defeats = new HashMap<String,ArgSet>();
+    protected HashMap<String,ArgSet> defeatedBy = new HashMap<String,ArgSet>();
+    public static final ArgSet emptySet = new ArgSet ();
 
-    ArrayList<String> argsList = new ArrayList<String> ();
+    protected ArrayList<String> argsList = new ArrayList<String> ();
 
     @Override
     public boolean equals (Object o) {
@@ -73,6 +74,7 @@ public class DAF {
     }
 
     public void addDefeats (String ... defs) {
+		if(defs.length%2!=0) throw new RuntimeException("Length must be an even number."+Arrays.toString(defs));
         for (int i=0; i < defs.length; i += 2) {
             addDefeat (defs[i], defs[i+1]);
         }
@@ -274,4 +276,9 @@ public class DAF {
         }
         return b.toString ();
     }
+
+	public ArgSet getArgs() {
+		// TODO Auto-generated method stub
+		return args;
+	}
 }

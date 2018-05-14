@@ -15,10 +15,15 @@ public class ArgSet extends HashSet<String> {
 
     public String toString () {
         StringBuilder b = new StringBuilder();
+        b.append("[");
         for (String a: this) {
             b.append (a);
-            b.append (" ");
+            b.append (",");
         }
+        
+        if(!b.toString().endsWith("[")) 
+        	b.setLength(b.toString().length()-1);
+        b.append("]");
         return b.toString();
     }
 }
