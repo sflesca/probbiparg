@@ -1,10 +1,5 @@
 package structures;
 
-public class BAF extends DAF {
-
-}
-package structures;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
