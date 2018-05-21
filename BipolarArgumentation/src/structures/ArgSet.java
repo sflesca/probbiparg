@@ -3,7 +3,8 @@ package structures;
 import java.util.HashSet;
 
 public class ArgSet extends HashSet<String> {
-    public ArgSet (ArgSet set) {
+
+	public ArgSet (ArgSet set) {
         super (set);
     }
 

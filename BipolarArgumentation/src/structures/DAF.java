@@ -95,7 +95,10 @@ public class DAF {
         }
         return defby;
     }
-
+    public boolean containsDefeat(String a, String b) {
+    	ArgSet def=getDefeats(a);
+    	return def.contains(b);
+    }
     public boolean acceptable (ArgSet set, String a) {
         for (String b: getDefeatedBy(a)) {
             boolean defended = false;
