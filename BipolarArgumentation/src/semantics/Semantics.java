@@ -16,9 +16,9 @@ public abstract class Semantics {
                                         daf.addArg(a);
                                 }
                         }
-                        for (String a : daf.args) {
+                        for (String a : daf.getArgs()) {
                                 for (String b : paf.getDefeats(a).keySet()) {
-                                        if (daf.args.contains(b)
+                                        if (daf.getArgs().contains(b)
                                                         && paf.defeats.get(a).get(b) >= Math.random()) {
                                                 daf.addDefeat(a, b);
                                         }
