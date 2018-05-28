@@ -1,18 +1,18 @@
 package test;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.sound.midi.Soundbank;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 import structures.ArgSet;
 import structures.BAF;
+import structures.PrBAF;
 
 public class TestBaf {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 
 		BAF baf = new BAF();
+	
 		// Esempio contenuto nell'articolo
 		baf.addArgs("a", "b", "c", "d", "e", "f");
 
@@ -28,8 +28,8 @@ public class TestBaf {
 		ArgSet adb = new ArgSet("a", "d", "b");
 		ArgSet aef = new ArgSet("a", "e", "f");
 		ArgSet ef = new ArgSet("e", "f");
-		ArgSet bd = new ArgSet("b","d");
-		ArgSet e= new ArgSet("e");
+		ArgSet bd = new ArgSet("b", "d");
+		ArgSet e = new ArgSet("e");
 		Test.runAlltest(baf, ae);
 		Test.runAlltest(baf, fc);
 		Test.runAlltest(baf, abf);
@@ -38,15 +38,13 @@ public class TestBaf {
 		Test.runAlltest(baf, ef);
 		Test.runAlltest(baf, bd);
 		Test.runAlltest(baf, e);
-
-	
 	}
 
 }
 
 class Test {
 	public static enum whichTest {
-		CONFLICT_FREE, SAFE,CLOSED, ADMISSIBLE, STABLE, COMPLETE, GROUNDED, PREFERRED
+		CONFLICT_FREE, SAFE, CLOSED, D_ADMISSIBLE, S_ADMISSIBLE, C_ADMISSIBLE, STABLE, COMPLETE, GROUNDED, PREFERRED
 	}
 
 	ArgSet set;
@@ -72,8 +70,14 @@ class Test {
 		case STABLE:
 			System.out.println(test + " wrt " + set + "\nFound: " + baf.stable(set) + "\n");
 			break;
-		case ADMISSIBLE:
-			System.out.println(test + " wrt " + set + "\nFound: " + baf.admissible(set) + "\n");
+		case D_ADMISSIBLE:
+			System.out.println(test + " wrt " + set + "\nFound: " + baf.Dadmissible(set) + "\n");
+			break;
+		case S_ADMISSIBLE:
+			System.out.println(test + " wrt " + set + "\nFound: " + baf.Sadmissible(set) + "\n");
+			break;
+		case C_ADMISSIBLE:
+			System.out.println(test + " wrt " + set + "\nFound: " + baf.Cadmissible(set) + "\n");
 			break;
 		case COMPLETE:
 			System.out.println(test + " wrt " + set + "\nFound: " + baf.complete(set) + "\n");

@@ -1,6 +1,7 @@
 package structures;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,10 +11,11 @@ import java.util.Set;
 
 public class BAF extends DAF {
 
-	private Map<String, ArgSet> supports = new HashMap<>();
-	private Map<String, ArgSet> supportedBy = new HashMap<>();
+	protected Map<String, ArgSet> supports = new HashMap<>();
+	protected Map<String, ArgSet> supportedBy = new HashMap<>();
 	private BAF extended;
-	private boolean stillValid;
+	protected boolean stillValid;
+
 	public void addSupport(String a, String b) {
 		ArgSet out = supports.get(a);
 		if (out == null) {
@@ -47,6 +49,9 @@ public class BAF extends DAF {
 	@Override
 	public void removeArg(String a) {
 		stillValid = false;
+		ArgSet sup = getSupports(a);
+		for (String b : sup)
+			removeSupport(a, b);
 		super.removeArg(a);
 	}
 
@@ -70,16 +75,18 @@ public class BAF extends DAF {
 		}
 		stillValid = false;
 	}
-
+	public void removeDefeat(String a , String b) {
+		super.removeDefeat(a, b);
+		stillValid=false;
+	}
 	public void removeSupport(String a, String b) {
 
-		ArgSet supportSet = supports.get(a) == null ? DAF.emptySet : supports.get(a);
-		if (supportSet != null)
-			supportSet.remove(b);
+		ArgSet supportSet = supports.get(a);
+		supportSet.remove(b);
 
-		ArgSet supportedBySet = supportedBy.get(b) == null ? DAF.emptySet : supportedBy.get(b);
-		if (supportedBySet != null)
-			supportedBySet.remove(b);
+		ArgSet supportedBySet = supportedBy.get(b);
+		supportedBySet.remove(b);
+
 		stillValid = false;
 	}
 
@@ -90,7 +97,12 @@ public class BAF extends DAF {
 		}
 		return sup;
 	}
-
+	public Map<String,ArgSet> getSupports() {
+		return Collections.unmodifiableMap(supports);
+	}	
+	public Map<String,ArgSet> getSupportedBy() {
+		return Collections.unmodifiableMap(supportedBy);
+	}
 	public ArgSet getSupportedBy(String a) {
 		ArgSet supBy = supportedBy.get(a);
 		if (supBy == null) {
@@ -107,32 +119,34 @@ public class BAF extends DAF {
 	@Override
 	public BAF copy() {
 		BAF baf = new BAF();
-		for (String s : argsList)
+		for (String s : getArgs())
 			baf.addArg(s);
-		for (String a : argsList)
+		for (String a : getArgs())
 			for (String b : getDefeats(a))
 				baf.addDefeat(a, b);
-		for (String a : argsList)
+		for (String a : getArgs())
 			for (String b : getSupports(a))
 				baf.addSupport(a, b);
+		
 		return baf;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
+		b.append("Arg: ");
 		for (String a : args) {
 			b.append(a);
 			b.append(" ");
 		}
-		b.append("\n");
+		b.append("\nDef: ");
 		for (String a : defeats.keySet()) {
 			for (String c : defeats.get(a)) {
 				b.append("{" + a + "," + c + "}");
 				b.append(" ");
 			}
 		}
-		b.append("\n");
+		b.append("\nSup: ");
 		for (String a : supports.keySet()) {
 			for (String c : supports.get(a)) {
 				b.append("{" + a + "," + c + "}");
@@ -286,6 +300,7 @@ public class BAF extends DAF {
 
 	@Override
 	public boolean conflictFree(ArgSet s) {
+		if(!hasArgSet(s))return false;
 		BAF extended = BAF.generateExtendedBaf(this);
 		for (String a : s)
 			for (String b : s)
@@ -295,6 +310,7 @@ public class BAF extends DAF {
 	}
 
 	public boolean safe(ArgSet set) {
+		if(!hasArgSet(set))return false;
 		BAF extended = BAF.generateExtendedBaf(this);
 		for (String b : getArgs())
 			if (extended.setAttack(set, b) && (extended.setSupport(set, b) || set.contains(b)))
@@ -303,6 +319,8 @@ public class BAF extends DAF {
 	}
 
 	public boolean closed(ArgSet set) {
+		if(!hasArgSet(set))return false;
+
 		BAF extended = BAF.generateExtendedBaf(this);
 		for (String a : set)
 			for (String b : extended.getArgs())
@@ -351,14 +369,31 @@ public class BAF extends DAF {
 		return true;
 	}
 
-	@Override
-	public boolean admissible(ArgSet s) {
+	public boolean Dadmissible(ArgSet s) {
 		BAF extended = BAF.generateExtendedBaf(this);
 		for (String a : s)
 			if (!extended.setDefend(s, a)) {
 				return false;
 			}
 		return extended.conflictFree(s);
+	}
+
+	public boolean Sadmissible(ArgSet s) {
+		BAF extended = BAF.generateExtendedBaf(this);
+		for (String a : s)
+			if (!extended.setDefend(s, a)) {
+				return false;
+			}
+		return extended.safe(s);
+	}
+
+	public boolean Cadmissible(ArgSet s) {
+		BAF extended = BAF.generateExtendedBaf(this);
+		for (String a : s)
+			if (!extended.setDefend(s, a)) {
+				return false;
+			}
+		return extended.conflictFree(s) && extended.closed(s);
 	}
 
 	@Override

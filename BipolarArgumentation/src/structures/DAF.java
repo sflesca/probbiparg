@@ -2,14 +2,16 @@ package structures;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DAF {
     double  weight = 1;
         
     protected ArgSet args = new ArgSet();
-    protected HashMap<String,ArgSet> defeats = new HashMap<String,ArgSet>();
-    protected HashMap<String,ArgSet> defeatedBy = new HashMap<String,ArgSet>();
+    protected Map<String,ArgSet> defeats = new HashMap<String,ArgSet>();
+    protected Map<String,ArgSet> defeatedBy = new HashMap<String,ArgSet>();
     public static final ArgSet emptySet = new ArgSet ();
 
     protected ArrayList<String> argsList = new ArrayList<String> ();
@@ -72,14 +74,24 @@ public class DAF {
         }
         in.add (a);
     }
-
+    public void removeDefeat(String a, String b) {
+    	ArgSet def= defeats.get(a);
+    	def.remove(b);
+    	ArgSet defBy =defeatedBy.get(b);
+    	defBy.remove(a);
+    }
     public void addDefeats (String ... defs) {
 		if(defs.length%2!=0) throw new RuntimeException("Length must be an even number."+Arrays.toString(defs));
         for (int i=0; i < defs.length; i += 2) {
             addDefeat (defs[i], defs[i+1]);
         }
     }
-
+    public Map<String,ArgSet> getDefeats(){
+    	return (Map<String, ArgSet>) Collections.unmodifiableMap(defeats);
+    }
+    public Map<String,ArgSet> getDefeatedBy(){
+    	return (Map<String, ArgSet>) Collections.unmodifiableMap(defeatedBy);
+    }
     public ArgSet getDefeats (String a) {
         ArgSet defs = defeats.get (a);
         if (defs == null) {
@@ -146,7 +158,7 @@ public class DAF {
     }
 
     public boolean admissible (ArgSet set) {
-        return conflictFree (set) && admissibleGivenConflictFree (set);
+        return hasArgSet(set)&&conflictFree (set) && admissibleGivenConflictFree (set);
     }
 
     public boolean stableGivenConflictFree (ArgSet set) {
