@@ -134,19 +134,19 @@ public class BAF extends DAF {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		b.append("Arg: ");
+		b.append("Arguments :");
 		for (String a : args) {
 			b.append(a);
 			b.append(" ");
 		}
-		b.append("\nDef: ");
+		b.append("\nDefeats :");
 		for (String a : defeats.keySet()) {
 			for (String c : defeats.get(a)) {
 				b.append("{" + a + "," + c + "}");
 				b.append(" ");
 			}
 		}
-		b.append("\nSup: ");
+		b.append("\nSupports :");
 		for (String a : supports.keySet()) {
 			for (String c : supports.get(a)) {
 				b.append("{" + a + "," + c + "}");

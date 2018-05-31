@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 
@@ -80,17 +81,18 @@ public class PrBAF extends BAF {
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
+		b.append("Arguments :");
 		for (String a : args) {
 			b.append("{" + a + ":" + argProb.get(a) + "} ");
 		}
-		b.append("\n");
+		b.append("\nDefeats :");
 		for (String a : defeats.keySet()) {
 			for (String c : defeats.get(a)) {
 				b.append("{" + a + "," + c + ":" + defProb.get(a).get(c) + "}");
 				b.append(" ");
 			}
 		}
-		b.append("\n");
+		b.append("\nSupp :");
 		for (String a : supports.keySet()) {
 			for (String c : supports.get(a)) {
 				b.append("{" + a + "," + c + ":" + supProb.get(a).get(c) + "}");
@@ -142,8 +144,123 @@ public class PrBAF extends BAF {
 	}
 
 	
-	
-	
+	public Iterator<BAF> worlds(){
+		return new Iterator<BAF>() {
+			Iterator<Set<String>> args=new PowerSet<String>(getArgs()).iterator();
+			Iterator<Set<Pair<String,String>>> defs;
+			Iterator<Set<Pair<String, String>>> sups;
+			BAF currArgs;
+			BAF currSup;
+			BAF currDef;
+			boolean avanzaArgs=true;
+			boolean avanzaSup;
+			boolean avanzaDef;
+			@Override
+			public boolean hasNext() {
+				return avanzaArgs||avanzaDef||avanzaSup;
+			}
+			
+			@Override
+			public BAF next() {
+				
+				if(avanzaDef) {
+					currDef=currSup.copy();
+					for(Pair<String,String> d:defs.next())
+						currDef.addDefeat(d.getKey(), d.getValue());
+					if(!defs.hasNext())
+						avanzaDef=false;
+						return currDef;
+				}
+				if(avanzaSup) {
+					currSup=currArgs.copy();
+					for(Pair<String,String> d:sups.next())
+						currSup.addSupport(d.getKey(), d.getValue());
+						defs=new PowerSet<Pair<String,String>>(generateDefeats(currSup.getArgs())).iterator();
+						avanzaDef=true;
+					if(!sups.hasNext())
+						avanzaSup=false;
+					currDef=currSup.copy();
+					for(Pair<String,String> d:defs.next())
+						currDef.addDefeat(d.getKey(), d.getValue());
+					if(!defs.hasNext())
+						avanzaDef=false;
+						return currDef;
+				}
+				if(avanzaArgs) {
+					currArgs=new BAF();
+					for(String a:args.next())
+						currArgs.addArg(a);
+						sups=new PowerSet<Pair<String,String>>(generateSupports(currArgs.getArgs())).iterator();
+						avanzaSup=true;
+						currSup=currArgs.copy();
+						for(Pair<String,String> d:sups.next())
+							currSup.addSupport(d.getKey(), d.getValue());
+							defs=new PowerSet<Pair<String,String>>(generateDefeats(currSup.getArgs())).iterator();
+							avanzaDef=true;
+						if(!sups.hasNext())
+							avanzaSup=false;
+						currDef=currSup.copy();
+						for(Pair<String,String> d:defs.next())
+							currDef.addDefeat(d.getKey(), d.getValue());
+						if(!defs.hasNext())
+							avanzaDef=false;
+						
+					if(!args.hasNext())
+						avanzaArgs=false;
+						return currDef;
+				}
+				return null;
+			}
+
+		
+			private Set<Pair<String, String>> generateDefeats(ArgSet args) {
+				Set<Pair<String,String>> set = new HashSet<>();
+				for(String a:args)
+					for(String b: getDefeats(a))
+						if(args.contains(b))
+							set.add(new Pair<String,String>(a,b));
+				return set;
+			}
+
+			private Set<Pair<String, String>> generateSupports(ArgSet args) {
+				Set<Pair<String,String>> set = new HashSet<>();
+				for(String a:args)
+					for(String b: getSupports(a))
+						if(args.contains(b))
+							set.add(new Pair<String,String>(a,b));
+				return set;
+			}
+			
+		};
+	}
+	public Iterator<BAF> notZeroProbPossibleWorlds(){
+		return new Iterator<BAF>() {
+			Iterator<BAF> it = worlds();
+			BAF curr;
+			@Override
+			public boolean hasNext() {
+				if(!it.hasNext())
+					return false;
+				curr=it.next();
+				while(it.hasNext()&&Double.compare(computeProb(curr),0d)==0) {
+					curr=it.next();
+				}
+				if(Double.compare(computeProb(curr),0d)==0)
+					return false;
+				return true;
+			}
+
+			@Override
+			public BAF next() {
+				return curr;
+			}
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+			
+		};
+	}
 	public Set<BAF> pw() {
 		Set<BAF> res = new HashSet<>();
 		PowerSet<String> argPower=new PowerSet<>(getArgs());
@@ -206,12 +323,10 @@ public class PrBAF extends BAF {
 	
 
 
-	//Preso da stackOverflow
 	public class PowerSet<E> implements Iterator<Set<E>>,Iterable<Set<E>>{
 	    private E[] arr = null;
 	    private BitSet bset = null;
 
-	    @SuppressWarnings("unchecked")
 	    public PowerSet(Set<E> set)
 	    {
 	        arr = (E[])set.toArray();
@@ -226,22 +341,17 @@ public class PrBAF extends BAF {
 	    @Override
 	    public Set<E> next() {
 	        Set<E> returnSet = new HashSet<E>();
-	        for(int i = 0; i < arr.length; i++)
-	        {
+	        for(int i = 0; i < arr.length; i++){
 	            if(bset.get(i))
 	                returnSet.add(arr[i]);
 	        }
-	        //increment bset
-	        for(int i = 0; i < bset.size(); i++)
-	        {
-	            if(!bset.get(i))
-	            {
+	        for(int i = 0; i < bset.size(); i++){
+	            if(!bset.get(i)){
 	                bset.set(i);
 	                break;
 	            }else
 	                bset.clear(i);
 	        }
-
 	        return returnSet;
 	    }
 
@@ -276,38 +386,31 @@ public class PrBAF extends BAF {
 		for (String a : baf.getArgs())
 			for (String b : baf.getSupports(a))
 				prob *= supProb.get(a).get(b);
+		Map<String, ArgSet> defeatsNotOccurredInBaf = new HashMap<>(getDefeats().keySet().stream().collect(Collectors.toMap(a->a, a->new ArgSet(getDefeats(a)))));
 
-		Map<String, ArgSet> defeatsNotOccurredInBaf = new HashMap<>();
-
-		for (String a : prBaf.getArgs())
-			defeatsNotOccurredInBaf.put(a, new ArgSet(prBaf.getDefeats(a)));
-		Iterator<String> it = defeatsNotOccurredInBaf.keySet().iterator();
-
-		while (it.hasNext()) {
-			String a = it.next();
-			if (!baf.args.contains(a))
-				it.remove();
-		}
+		for(String a:getDefeats().keySet())
+			for(String b: getDefeats(a))
+				if(!baf.getArgs().contains(a)||!baf.getArgs().contains(b))
+					defeatsNotOccurredInBaf.get(a).remove(b);
 		
-		for (String a : baf.args)
-			for (String b : baf.getDefeats(a))
+				
+		for(String a: baf.getDefeats().keySet())
+			for(String b: baf.getDefeats(a))
 				defeatsNotOccurredInBaf.get(a).remove(b);
-
-		Map<String, ArgSet> supportsNotOccurredInBaf = new HashMap<>();
-
-		for (String a : prBaf.getArgs())
-			supportsNotOccurredInBaf.put(a, new ArgSet(prBaf.getSupports(a)));
-
-		it = supportsNotOccurredInBaf.keySet().iterator();
-		while (it.hasNext()) {
-			String a = it.next();
-			if (!baf.args.contains(a))
-				it.remove();
-		}
-		for (String a : baf.args)
-			for (String b : baf.getSupports(a)) {
+		
+		
+		Map<String, ArgSet> supportsNotOccurredInBaf = new HashMap<>(getSupports().keySet().stream().collect(Collectors.toMap(a->a, a->new ArgSet(getSupports(a)))));
+		for(String a:getSupports().keySet())
+			for(String b: getSupports(a))
+				if(!baf.getArgs().contains(a)||!baf.getArgs().contains(b))
+					supportsNotOccurredInBaf.get(a).remove(b);
+		
+				
+		for(String a: baf.getSupports().keySet())
+			for(String b: baf.getSupports(a))
 				supportsNotOccurredInBaf.get(a).remove(b);
-			}
+	
+	
 
 		for (String a : defeatsNotOccurredInBaf.keySet())
 			for (String b : defeatsNotOccurredInBaf.get(a))
@@ -322,7 +425,7 @@ public class PrBAF extends BAF {
 
 	public double probDadmissible(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.Dadmissible(set))
@@ -333,7 +436,7 @@ public class PrBAF extends BAF {
 
 	public double probCadmissible(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.Cadmissible(set))
@@ -344,7 +447,7 @@ public class PrBAF extends BAF {
 
 	public double probSadmissible(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.Sadmissible(set))
@@ -355,7 +458,7 @@ public class PrBAF extends BAF {
 
 	public double probComplete(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.complete(set))
@@ -366,7 +469,7 @@ public class PrBAF extends BAF {
 
 	public double probGrounded(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.grounded(set))
@@ -377,7 +480,7 @@ public class PrBAF extends BAF {
 
 	public double probPreferred(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.preferred(set))
@@ -388,7 +491,7 @@ public class PrBAF extends BAF {
 
 	public double probIdeal(ArgSet set) {
 		double prob = 0;
-		Iterator<BAF> it = possibleWorlds();
+		Iterator<BAF> it = notZeroProbPossibleWorlds();
 		while (it.hasNext()) {
 			BAF baf = it.next();
 			if (baf.ideal(set))
