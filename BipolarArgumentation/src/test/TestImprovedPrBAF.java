@@ -5,6 +5,7 @@ import java.util.List;
 import semantics.Semantics;
 import structures.ArgSet;
 import structures.PrBAF;
+import support.Pair;
 
 
 public class TestImprovedPrBAF {
@@ -33,22 +34,22 @@ public class TestImprovedPrBAF {
 		System.out.println("Calculating...");
 		long startTime = System.currentTimeMillis();
 		float Pr = 0.0f;
-		List<Object> A_e = computeAe(baf);  
-		List<Object> R_e = computeRe(baf, A_e);
-		for ( Object currentA_e : A_e ) {
-			for ( Object currentR_e : R_e ) {
+		List<String> A_e = baf.computeAe();  
+		List<Pair> R_e = baf.computeRe(A_e);
+		for ( String currentA_e : A_e ) {
+			for ( Pair currentR_e : R_e ) {
 				float Pr_s = 0.0f;
 				if ( true ) { //TODO
-					Object F_p = contract(baf, currentA_e, currentR_e);
+					PrBAF F_p = baf.contract(currentA_e, currentR_e);
 					float Pr_p = 0; //TODO
-					Object F_s = complete(F_p, currentA_e, currentR_e);
+					PrBAF F_s = F_p.complete(currentA_e, currentR_e);
 					if ( true ) { //TODO
-						if ( !isSafe(F_s, S, currentA_e, currentR_e) ) {
+						if ( !F_s.safe(S) ) {
 							Pr_s = 0.0f;
 						}
 					}
 					else if ( true ) { //TODO
-						if ( !baf.closed(S) ) {
+						if ( !F_s.closed(S) ) {
 							Pr_s = 0.0f;
 						}
 					}
@@ -64,7 +65,7 @@ public class TestImprovedPrBAF {
 						aafsem = null; //TODO
 					}
 					float Pr_pp = computePrAAF(F_c, aafsem);
-					Pr = Pr + Pr_p * Pr_s * Pr_pp;
+					Pr += Pr_p * Pr_s * Pr_pp;
 				}
 			}
 		}
@@ -80,36 +81,6 @@ public class TestImprovedPrBAF {
 	}
 
 	private static Object toPrAAF(Object f_s) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static boolean superClosed(Object f_s, Object s) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private static boolean isSafe(Object f_s, Object s, Object currentA_e, Object currentR_e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private static Object complete(Object f_p, Object currentA_e, Object currentR_e) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static Object contract(PrBAF baf, Object currentAe, Object currentRe) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	private static List<Object> computeAe(PrBAF baf) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	private static List<Object> computeRe(PrBAF baf, Object A_e) {
 		// TODO Auto-generated method stub
 		return null;
 	}

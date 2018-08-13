@@ -4,6 +4,8 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -499,5 +501,73 @@ public class PrBAF extends BAF {
 		}
 		return prob;
 	}
+	
+	public List<String> computeAe() {
+		List<String> result = new LinkedList<>();
+		for ( String currentArg : args ) {
+			if ( supports.containsKey(currentArg) ) {
+				result.add(currentArg);
+			}
+			else if ( supportedBy.containsKey(currentArg) ) {
+				result.add(currentArg);
+			}
+			else if ( defeatedBy.containsKey(currentArg) ) {
+				ArgSet set = defeatedBy.get(currentArg);
+				for ( String arg : set ) {
+					if ( supportedBy.containsKey(arg) ) {
+						result.add(currentArg);
+						break;
+					}
+				}
+			}
+			else if ( defeats.containsKey(currentArg) ) {
+				ArgSet set = defeats.get(currentArg);
+				for ( String arg : set ) {
+					if ( supportedBy.containsKey(arg) ) {
+						result.add(currentArg);
+						break;
+					}
+				}
+			}
+		}
+		return result;
+	}
+	
+	public List<support.Pair> computeRe(List<String> A_e) {
+		List<support.Pair> result = new LinkedList<>();
+		// checking in R_a
+		for ( String currentDefeats : defeats.keySet() ) {
+			for ( String currentDefeated : defeats.get(currentDefeats) ) {
+				if ( checkReCondition(currentDefeats, currentDefeated, A_e) ) {
+					result.add(new support.Pair(currentDefeats, currentDefeated));
+				}
+			}
+		}
+		// checking in R_s
+		for ( String currentSupports : supports.keySet() ) {
+			for ( String currentSupported : supports.get(currentSupports) ) {
+				if ( checkReCondition(currentSupports, currentSupported, A_e) ) {
+					result.add(new support.Pair(currentSupports, currentSupported));
+				}
+			}
+		}
+		return result;
+	}
 
+	private boolean checkReCondition(String currentDefeats, String currentDefeated, List<String> A_e) {
+		for ( String arg : A_e ) {
+			if ( arg.equals(currentDefeated) || arg.equals(currentDefeated) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public PrBAF contract(String Ae, support.Pair Re) {
+		return null;
+	}
+	
+	public PrBAF complete(String Ae, support.Pair Re) {
+		return null;
+	}
 }
