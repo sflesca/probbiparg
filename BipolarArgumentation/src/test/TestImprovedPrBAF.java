@@ -2,14 +2,14 @@ package test;
 
 
 import java.util.List;
-import semantics.Semantics;
 import structures.ArgSet;
 import structures.PrBAF;
+import support.Constants.SemanticsType;
 import support.Pair;
 
 
 public class TestImprovedPrBAF {
-
+	
 	
 	public static void main(String[] args) {
 		System.out.println("Generating sample...");
@@ -26,15 +26,21 @@ public class TestImprovedPrBAF {
 		baf.addSupport("a", "b", 1);
 		baf.addSupport("c", "d", 1);
 		ArgSet S = null;
-		Semantics sem = null;
-		elaborate(baf, S, sem);
+		SemanticsType sem = SemanticsType.c_ad; //TODO
+		
+		// elaborating
+		long startTime = System.currentTimeMillis();
+		System.out.println("Calculating...");
+		float result = elaborate(baf, S, sem);
+		long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Completed!");
+		System.out.println("Result: " + result);
+		System.out.println("Computation Time: " + elapsedTime);
 	}
 
-	private static void elaborate(PrBAF baf, ArgSet S, Semantics sem) {
-		System.out.println("Calculating...");
-		long startTime = System.currentTimeMillis();
+	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
 		float Pr = 0.0f;
-		List<String> A_e = baf.computeAe();  
+		List<String> A_e = baf.computeAe();
 		List<Pair> R_e = baf.computeRe(A_e);
 		for ( String currentA_e : A_e ) {
 			for ( Pair currentR_e : R_e ) {
@@ -43,12 +49,12 @@ public class TestImprovedPrBAF {
 					PrBAF F_p = baf.contract(currentA_e, currentR_e);
 					float Pr_p = 0; //TODO
 					PrBAF F_s = F_p.complete(currentA_e, currentR_e);
-					if ( true ) { //TODO
+					if ( sem == SemanticsType.s_ad ) { 
 						if ( !F_s.safe(S) ) {
 							Pr_s = 0.0f;
 						}
 					}
-					else if ( true ) { //TODO
+					else if ( sem == SemanticsType.c_ad ) { 
 						if ( !F_s.closed(S) ) {
 							Pr_s = 0.0f;
 						}
@@ -57,30 +63,27 @@ public class TestImprovedPrBAF {
 						Pr_s = 1.0f;
 					}
 					Object F_c = toPrAAF(F_s);
-					Object aafsem;
-					if ( true ) { //TODO
-						aafsem = null; //TODO
+					SemanticsType aafsem;
+					if ( sem == SemanticsType.st ) { 
+						aafsem = SemanticsType.st; 
 					}
 					else {
-						aafsem = null; //TODO
+						aafsem = SemanticsType.ad; 
 					}
 					float Pr_pp = computePrAAF(F_c, aafsem);
 					Pr += Pr_p * Pr_s * Pr_pp;
 				}
 			}
 		}
-		long elapsedTime = System.currentTimeMillis() - startTime;
-		System.out.println("Completed!");
-		System.out.println("Result: " + Pr);
-		System.out.println("Computation Time: " + elapsedTime);
+		return Pr;
 	}
 
-	private static float computePrAAF(Object f_c, Object aafsem) {
+	private static float computePrAAF(Object f_c, SemanticsType aafsem) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	private static Object toPrAAF(Object f_s) {
+	private static Object toPrAAF(PrBAF f_s) {
 		// TODO Auto-generated method stub
 		return null;
 	}
