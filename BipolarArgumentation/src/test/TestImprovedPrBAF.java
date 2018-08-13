@@ -2,7 +2,8 @@ package test;
 
 
 import java.util.List;
-
+import semantics.Semantics;
+import structures.ArgSet;
 import structures.PrBAF;
 
 
@@ -10,7 +11,7 @@ public class TestImprovedPrBAF {
 
 	
 	public static void main(String[] args) {
-		System.out.println("Generating sample graph...");
+		System.out.println("Generating sample...");
 		PrBAF baf = new PrBAF();
 		baf.addArg("a", 1);
 		baf.addArg("b", 1);
@@ -23,15 +24,17 @@ public class TestImprovedPrBAF {
 		baf.addDefeat("f", "d", 1);
 		baf.addSupport("a", "b", 1);
 		baf.addSupport("c", "d", 1);
-		
-		Object S = null; //TODO
+		ArgSet S = null;
+		Semantics sem = null;
+		elaborate(baf, S, sem);
+	}
+
+	private static void elaborate(PrBAF baf, ArgSet S, Semantics sem) {
 		System.out.println("Calculating...");
-		long t = System.currentTimeMillis();
-		
-		
+		long startTime = System.currentTimeMillis();
 		float Pr = 0.0f;
-		List<Object> A_e = computeAe();  
-		List<Object> R_e = computeRe();
+		List<Object> A_e = computeAe(baf);  
+		List<Object> R_e = computeRe(baf, A_e);
 		for ( Object currentA_e : A_e ) {
 			for ( Object currentR_e : R_e ) {
 				float Pr_s = 0.0f;
@@ -45,7 +48,7 @@ public class TestImprovedPrBAF {
 						}
 					}
 					else if ( true ) { //TODO
-						if ( !superClosed(F_s, S) ) {
+						if ( !baf.closed(S) ) {
 							Pr_s = 0.0f;
 						}
 					}
@@ -65,7 +68,8 @@ public class TestImprovedPrBAF {
 				}
 			}
 		}
-		long elapsedTime = System.currentTimeMillis() - t;
+		long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Completed!");
 		System.out.println("Result: " + Pr);
 		System.out.println("Computation Time: " + elapsedTime);
 	}
@@ -100,12 +104,12 @@ public class TestImprovedPrBAF {
 		return null;
 	}
 
-	private static List<Object> computeAe() {
+	private static List<Object> computeAe(PrBAF baf) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
-	private static List<Object> computeRe() {
+	private static List<Object> computeRe(PrBAF baf, Object A_e) {
 		// TODO Auto-generated method stub
 		return null;
 	}
