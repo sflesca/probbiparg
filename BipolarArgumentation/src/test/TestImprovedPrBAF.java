@@ -25,7 +25,7 @@ public class TestImprovedPrBAF {
 		baf.addDefeat("f", "d", 1);
 		baf.addSupport("a", "b", 1);
 		baf.addSupport("c", "d", 1);
-		ArgSet S = null;
+		ArgSet S = null; //TODO
 		SemanticsType sem = SemanticsType.c_ad; //TODO
 		
 		// elaborating
@@ -45,9 +45,9 @@ public class TestImprovedPrBAF {
 		for ( String currentA_e : A_e ) {
 			for ( Pair currentR_e : R_e ) {
 				float Pr_s = 0.0f;
-				if ( true ) { //TODO
+				if ( true ) { //TODO genero tutti i sottoinsiemi di A'e -> R'e  
 					PrBAF F_p = baf.contract(currentA_e, currentR_e);
-					float Pr_p = 0; //TODO
+					float Pr_p = F_p.calculatePr(); 
 					PrBAF F_s = F_p.complete(currentA_e, currentR_e);
 					if ( sem == SemanticsType.s_ad ) { 
 						if ( !F_s.safe(S) ) {
@@ -62,7 +62,7 @@ public class TestImprovedPrBAF {
 					else {
 						Pr_s = 1.0f;
 					}
-					Object F_c = toPrAAF(F_s);
+					PrBAF F_c = F_s.toPrAAF();
 					SemanticsType aafsem;
 					if ( sem == SemanticsType.st ) { 
 						aafsem = SemanticsType.st; 
@@ -70,22 +70,12 @@ public class TestImprovedPrBAF {
 					else {
 						aafsem = SemanticsType.ad; 
 					}
-					float Pr_pp = computePrAAF(F_c, aafsem);
+					float Pr_pp = F_c.computePrAAF(aafsem);
 					Pr += Pr_p * Pr_s * Pr_pp;
 				}
 			}
 		}
 		return Pr;
-	}
-
-	private static float computePrAAF(Object f_c, SemanticsType aafsem) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private static Object toPrAAF(PrBAF f_s) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	

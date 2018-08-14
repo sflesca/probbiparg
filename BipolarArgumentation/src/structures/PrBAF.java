@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javafx.util.Pair;
+import support.Constants.SemanticsType;
 
 public class PrBAF extends BAF {
 
@@ -564,10 +565,33 @@ public class PrBAF extends BAF {
 	}
 
 	public PrBAF contract(String Ae, support.Pair Re) {
-		return null;
+		PrBAF result = new PrBAF();
+		
+		
+		
+		return result;
 	}
 	
 	public PrBAF complete(String Ae, support.Pair Re) {
+		//TODO
 		return null;
 	}
+	
+	public float computePrAAF(SemanticsType aafsem) {
+		// TODO Auto-generated method stub
+		// tocl
+		return 0;
+	}
+	
+	public PrBAF toPrAAF() {
+		// TODO Auto-generated method stub
+		// tocl sommatoria granbde per semantica stable
+		return null;
+	}
+	
+	public float calculatePr() {
+		//TODO
+		return 0;
+	}
+
 }
