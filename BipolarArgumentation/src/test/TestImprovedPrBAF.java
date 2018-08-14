@@ -25,9 +25,8 @@ public class TestImprovedPrBAF {
 		baf.addDefeat("f", "d", 1);
 		baf.addSupport("a", "b", 1);
 		baf.addSupport("c", "d", 1);
-		ArgSet S = null; //TODO
-		SemanticsType sem = SemanticsType.c_ad; //TODO
-		
+		ArgSet S = new ArgSet("a", "b", "c");
+		SemanticsType sem = SemanticsType.c_ad;
 		// elaborating
 		long startTime = System.currentTimeMillis();
 		System.out.println("Calculating...");
@@ -45,7 +44,7 @@ public class TestImprovedPrBAF {
 		for ( String currentA_e : A_e ) {
 			for ( Pair currentR_e : R_e ) {
 				float Pr_s = 0.0f;
-				if ( true ) { //TODO genero tutti i sottoinsiemi di A'e -> R'e  
+				if ( currentR_e.getA().equals(currentA_e) || currentR_e.getB().equals(currentA_e)  ) {
 					PrBAF F_p = baf.contract(currentA_e, currentR_e);
 					float Pr_p = F_p.calculatePr(); 
 					PrBAF F_s = F_p.complete(currentA_e, currentR_e);

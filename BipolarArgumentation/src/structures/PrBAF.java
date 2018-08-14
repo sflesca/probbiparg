@@ -20,6 +20,7 @@ public class PrBAF extends BAF {
 	private Map<String, ArgProb> supProb = new HashMap<>();
 
 	private class ArgProb extends HashMap<String, Double> {
+		private static final long serialVersionUID = 1L;
 	};
 
 	public void addArg(String s, double d) {
@@ -330,7 +331,8 @@ public class PrBAF extends BAF {
 	    private E[] arr = null;
 	    private BitSet bset = null;
 
-	    public PowerSet(Set<E> set)
+	    @SuppressWarnings("unchecked")
+		public PowerSet(Set<E> set)
 	    {
 	        arr = (E[])set.toArray();
 	        bset = new BitSet(arr.length + 1);
@@ -566,7 +568,7 @@ public class PrBAF extends BAF {
 
 	public PrBAF contract(String Ae, support.Pair Re) {
 		PrBAF result = new PrBAF();
-		
+		//TODO
 		
 		
 		return result;
@@ -593,5 +595,6 @@ public class PrBAF extends BAF {
 		//TODO
 		return 0;
 	}
+	
 
 }
