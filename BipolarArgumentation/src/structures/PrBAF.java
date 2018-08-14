@@ -508,29 +508,8 @@ public class PrBAF extends BAF {
 	public List<String> computeAe() {
 		List<String> result = new LinkedList<>();
 		for ( String currentArg : args ) {
-			if ( supports.containsKey(currentArg) ) {
+			if ( supports.containsKey(currentArg) || supportedBy.containsKey(currentArg) ) {
 				result.add(currentArg);
-			}
-			else if ( supportedBy.containsKey(currentArg) ) {
-				result.add(currentArg);
-			}
-			else if ( defeatedBy.containsKey(currentArg) ) {
-				ArgSet set = defeatedBy.get(currentArg);
-				for ( String arg : set ) {
-					if ( supportedBy.containsKey(arg) ) {
-						result.add(currentArg);
-						break;
-					}
-				}
-			}
-			else if ( defeats.containsKey(currentArg) ) {
-				ArgSet set = defeats.get(currentArg);
-				for ( String arg : set ) {
-					if ( supportedBy.containsKey(arg) ) {
-						result.add(currentArg);
-						break;
-					}
-				}
 			}
 		}
 		return result;
@@ -588,6 +567,17 @@ public class PrBAF extends BAF {
 	public PrBAF toPrAAF() {
 		// TODO Auto-generated method stub
 		// tocl sommatoria granbde per semantica stable
+		
+		/*
+		  A probabilistic BAF (prBAF) F is a tuple F = ⟨A,Ra,Rs,P⟩, where F = ⟨A,Ra,Rs⟩ is a BAF 
+		  and P is a probability distri- bution function (pdf) over the set
+		   PS = {α = ⟨A′,R′a,R′s⟩|A′ ⊆ A∧ R′a ⊆ (A′ × A′) ∩ Ra ∧ R′s ⊆ (A′ × A′) ∩ Rs}.
+		  
+		  Definition 2.2 (PrAF). A probabilistic argumentation framework (PrAF) is a tuple
+A, PA, D, PD, where A, D is an AAF and PA and PD are, respectively, functions
+assigning a nonzero3 probability value to each argument in A and defeat in D, that is,
+PA : A→ (0, 1] and PD : D → (0, 1].
+		 */
 		return null;
 	}
 	
