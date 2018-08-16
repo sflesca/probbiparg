@@ -554,7 +554,28 @@ public class PrBAF extends BAF {
 	}
 	
 	public PrBAF complete(String Ae, support.Pair Re) {
+		PrBAF result = new PrBAF();
+		result.args = this.args;
+		result.supports = this.supports;
+		result.supportedBy = this.supportedBy;
+		result.defeats = this.defeats;
+		result.defeatedBy = this.defeatedBy;
+		BAF cert = cert();
+
+
+		
+		
+		return result;
+	}
+	
+	private BAF cert() {
 		//TODO
+		
+		/*
+		result.addArg(Ae, 1);
+		for ( String arg :  ) {
+			
+		}*/
 		return null;
 	}
 	
