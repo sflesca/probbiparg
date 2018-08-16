@@ -560,23 +560,69 @@ public class PrBAF extends BAF {
 		result.supportedBy = this.supportedBy;
 		result.defeats = this.defeats;
 		result.defeatedBy = this.defeatedBy;
-		BAF cert = cert();
-
-
-		
-		
+		result.argProb = this.argProb;
+		result.defProb = this.defProb;
+		result.supProb = this.supProb;
+		BAF cert = cert(Ae);
+		if ( cert.Sadmissible(new ArgSet(Ae)) ) {
+			for ( String currentSupport : cert.supports.keySet() ) {
+				if ( currentSupport.equals(Ae) ) {
+					for ( String arg : cert.defeats.get(currentSupport) ) {
+						result.addArg(arg);
+						result.addDefeat(currentSupport, arg, 1);
+					}
+				}
+			}
+		}
+		else {
+			for ( String currentDefeats : cert.defeats.keySet() ) {
+				if ( currentDefeats.equals(Ae) ) {
+					for ( String arg : cert.defeats.get(currentDefeats) ) {
+						result.addArg(arg);
+						result.addDefeat(currentDefeats, arg, 1);
+					}
+				}
+			}
+		}
 		return result;
 	}
 	
-	private BAF cert() {
-		//TODO
-		
-		/*
-		result.addArg(Ae, 1);
-		for ( String arg :  ) {
-			
-		}*/
-		return null;
+	private BAF cert(String Ae) { //TODO verificare correttezza
+		BAF result = new BAF();
+		result.addArg(Ae);
+		for ( String currentDefeats : defeats.keySet() ) {
+			if ( currentDefeats.equals(Ae) ) {
+				for ( String arg : defeats.get(currentDefeats) ) {
+					result.addArg(arg);
+					result.addDefeat(currentDefeats, arg);
+				}
+			}
+		}
+		for ( String currentDefeated : defeatedBy.keySet() ) {
+			if ( currentDefeated.equals(Ae) ) {
+				for ( String arg : defeats.get(currentDefeated) ) {
+					result.addArg(arg);
+					result.addDefeat(arg, currentDefeated);
+				}
+			}
+		}
+		for ( String currentSupport : supports.keySet() ) {
+			if ( currentSupport.equals(Ae) ) {
+				for ( String arg : defeats.get(currentSupport) ) {
+					result.addArg(arg);
+					result.addDefeat(currentSupport, arg);
+				}
+			}
+		}
+		for ( String currentSupported : supportedBy.keySet() ) {
+			if ( currentSupported.equals(Ae) ) {
+				for ( String arg : defeats.get(currentSupported) ) {
+					result.addArg(arg);
+					result.addDefeat(arg, currentSupported);
+				}
+			}
+		}
+		return result;
 	}
 	
 	public float computePrAAF(SemanticsType aafsem) {
