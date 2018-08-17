@@ -521,7 +521,7 @@ public class PrBAF extends BAF {
 		for ( String currentDefeats : defeats.keySet() ) {
 			for ( String currentDefeated : defeats.get(currentDefeats) ) {
 				if ( checkReCondition(currentDefeats, currentDefeated, A_e) ) {
-					result.add(new support.Pair(currentDefeats, currentDefeated));
+					result.add(new support.Pair(currentDefeats, currentDefeated, defProb.get(currentDefeats).get(currentDefeated)));
 				}
 			}
 		}
@@ -529,7 +529,7 @@ public class PrBAF extends BAF {
 		for ( String currentSupports : supports.keySet() ) {
 			for ( String currentSupported : supports.get(currentSupports) ) {
 				if ( checkReCondition(currentSupports, currentSupported, A_e) ) {
-					result.add(new support.Pair(currentSupports, currentSupported));
+					result.add(new support.Pair(currentSupports, currentSupported, defProb.get(currentSupports).get(currentSupported)));
 				}
 			}
 		}
@@ -587,7 +587,7 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	private BAF cert(String Ae) { //TODO verificare correttezza
+	private BAF cert(String Ae) { //FIXME verificare correttezza
 		BAF result = new BAF();
 		result.addArg(Ae);
 		for ( String currentDefeats : defeats.keySet() ) {
@@ -648,9 +648,18 @@ PA : A→ (0, 1] and PD : D → (0, 1].
 		return null;
 	}
 	
-	public float calculatePr() {
-		//TODO
-		return 0;
+	public float calculatePr(String currentA_e, List<support.Pair> R_e) { //FIXME verificare correttezza
+		float termA = 1;
+		for ( String arg : argProb.keySet() ) {
+			termA *= argProb.get(arg);
+		}
+		float termB = 1;
+		for ( support.Pair currentR_e : R_e ) {
+			if ( currentR_e.getA().equals(currentA_e) || currentR_e.getB().equals(currentA_e)  ) {
+				termB *= currentR_e.getProbability();
+			}
+		}
+		return termA * termB;
 	}
 	
 

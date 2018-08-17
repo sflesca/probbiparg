@@ -46,7 +46,7 @@ public class TestImprovedPrBAF {
 				float Pr_s = 0.0f;
 				if ( currentR_e.getA().equals(currentA_e) || currentR_e.getB().equals(currentA_e)  ) {
 					PrBAF F_p = baf.contract(currentA_e, currentR_e);
-					float Pr_p = F_p.calculatePr(); 
+					float Pr_p = F_p.calculatePr(currentA_e, R_e); 
 					PrBAF F_s = F_p.complete(currentA_e, currentR_e);
 					if ( sem == SemanticsType.s_ad ) { 
 						if ( !F_s.safe(S) ) {
