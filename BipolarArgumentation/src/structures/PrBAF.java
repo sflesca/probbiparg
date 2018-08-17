@@ -587,7 +587,7 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	private BAF cert(String Ae) { //FIXME verificare correttezza
+	private BAF cert(String Ae) { //VERIFY 
 		BAF result = new BAF();
 		result.addArg(Ae);
 		for ( String currentDefeats : defeats.keySet() ) {
@@ -648,7 +648,7 @@ PA : A→ (0, 1] and PD : D → (0, 1].
 		return null;
 	}
 	
-	public float calculatePr(String currentA_e, List<support.Pair> R_e) { //FIXME verificare correttezza
+	public float calculatePr(String currentA_e, List<support.Pair> R_e) { //VERIFY 
 		float termA = 1;
 		for ( String arg : argProb.keySet() ) {
 			termA *= argProb.get(arg);
