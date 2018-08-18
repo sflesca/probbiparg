@@ -39,43 +39,42 @@ public class TestImprovedPrBAF {
 	}
 
 	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
-		float Pr = 0.0f;
-		List<String> A_e = baf.computeAe();
-		List<Pair> R_e = baf.computeRe(A_e);
-		for ( ArgSet A_pe : Support.getAllPermutations(A_e) ) {
-			for ( Pair currentR_e : R_e ) {
-				float Pr_s = 0.0f;
-				if ( Support.contains(A_pe, currentR_e) ) {
-					PrBAF F_p = baf.contract(A_pe, currentR_e);
-					float Pr_p = F_p.calculatePr(A_e, A_pe, R_e); 
-					PrBAF F_s = F_p.complete(A_pe, currentR_e);
-					if ( sem == SemanticsType.s_ad ) { 
-						if ( !F_s.safe(S) ) {
-							Pr_s = 0.0f;
-						}
+		float pr = 0.0f;
+		List<String> Ae = baf.computeAe();
+		List<Pair> Re = baf.computeRe(Ae);
+		for ( ArgSet currentArgumentSubset : Support.getAllArgumentsSubsets(Ae) ) {
+			List<Pair> rightPairs = Support.filterPairs(Re, currentArgumentSubset);
+			for ( List<Pair> currentPairSubset : Support.getAllPairsSubsets(rightPairs) ) {
+				float prPrime = 0.0f;
+				PrBAF fStar = baf.contract(currentArgumentSubset, currentPairSubset);
+				float prStar = fStar.calculatePr(currentArgumentSubset, currentPairSubset); 
+				PrBAF fPrime = fStar.complete(currentArgumentSubset, currentPairSubset);
+				if ( sem == SemanticsType.s_ad ) { 
+					if ( !fPrime.safe(S) ) {
+						prPrime = 0.0f;
 					}
-					else if ( sem == SemanticsType.c_ad ) { 
-						if ( !F_s.closed(S) ) {
-							Pr_s = 0.0f;
-						}
-					}
-					else {
-						Pr_s = 1.0f;
-					}
-					PrBAF F_c = F_s.toPrAAF();
-					SemanticsType aafsem;
-					if ( sem == SemanticsType.st ) { 
-						aafsem = SemanticsType.st; 
-					}
-					else {
-						aafsem = SemanticsType.ad; 
-					}
-					float Pr_pp = F_c.computePrAAF(aafsem);
-					Pr += Pr_p * Pr_s * Pr_pp;
 				}
+				else if ( sem == SemanticsType.c_ad ) { 
+					if ( !fPrime.closed(S) ) {
+						prPrime = 0.0f;
+					}
+				}
+				else {
+					prPrime = 1.0f;
+				}
+				PrBAF fSigned = fStar.toPrAAF();
+				SemanticsType aafsem;
+				if ( sem == SemanticsType.st ) { 
+					aafsem = SemanticsType.st; 
+				}
+				else {
+					aafsem = SemanticsType.ad; 
+				}
+				float prSigned = fSigned.computePrAAF(aafsem);
+				pr += prStar * prPrime * prSigned;
 			}
 		}
-		return Pr;
+		return pr;
 	}
 
 	

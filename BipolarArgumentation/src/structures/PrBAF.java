@@ -535,12 +535,12 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	public List<support.Pair> computeRe(List<String> A_e) {
+	public List<support.Pair> computeRe(List<String> args) {
 		List<support.Pair> result = new LinkedList<>();
 		// checking in R_a
 		for ( String currentDefeats : defeats.keySet() ) {
 			for ( String currentDefeated : defeats.get(currentDefeats) ) {
-				if ( checkReCondition(currentDefeats, currentDefeated, A_e) ) {
+				if ( checkReCondition(currentDefeats, currentDefeated, args) ) {
 					result.add(new support.Pair(currentDefeats, currentDefeated, defProb.get(currentDefeats).get(currentDefeated)));
 				}
 			}
@@ -548,7 +548,7 @@ public class PrBAF extends BAF {
 		// checking in R_s
 		for ( String currentSupports : supports.keySet() ) {
 			for ( String currentSupported : supports.get(currentSupports) ) {
-				if ( checkReCondition(currentSupports, currentSupported, A_e) ) {
+				if ( checkReCondition(currentSupports, currentSupported, args) ) {
 					result.add(new support.Pair(currentSupports, currentSupported, defProb.get(currentSupports).get(currentSupported)));
 				}
 			}
@@ -556,8 +556,8 @@ public class PrBAF extends BAF {
 		return result;
 	}
 
-	private boolean checkReCondition(String currentDefeats, String currentDefeated, List<String> A_e) {
-		for ( String arg : A_e ) {
+	private boolean checkReCondition(String currentDefeats, String currentDefeated, List<String> args) {
+		for ( String arg : args ) {
 			if ( arg.equals(currentDefeated) || arg.equals(currentDefeated) ) {
 				return true;
 			}
@@ -565,17 +565,38 @@ public class PrBAF extends BAF {
 		return false;
 	}
 
-	public PrBAF contract(ArgSet Ae, support.Pair Re) { //VERIFY 
-		//TODO
+	public PrBAF contract(ArgSet args, List<support.Pair> pairs) { //VERIFY 
 		PrBAF result = copy();
-		//result.argProb.put(Ae, 1.0);
-		
-		
-		
+		for ( support.Pair currentPair : pairs ) {
+			if ( result.defeats.containsKey(currentPair.getA()) ) {
+				if ( defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
+					result.addDefeat(currentPair.getA(), currentPair.getB(), 1);
+				}
+				else {
+					result.removeDefeat(currentPair.getA(), currentPair.getB());
+				}
+			}
+			if ( result.supports.containsKey(currentPair.getA()) ) {
+				if ( supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
+					result.addSupport(currentPair.getA(), currentPair.getB(), 1);
+				}
+				else {
+					result.removeSupport(currentPair.getA(), currentPair.getB());
+				}
+			}
+		}
+		for ( String arg : result.args ) {
+			if ( args.contains(arg) ) {
+				result.argProb.put(arg, 1.0);
+			}
+			else {
+				result.removeArg(arg);
+			}
+		}
 		return result;
 	}
 
-	public PrBAF complete(ArgSet Ae, support.Pair Re) {
+	public PrBAF complete(ArgSet args, List<support.Pair> pairs) { //VERIFY
 		PrBAF result = new PrBAF();
 		result.args = this.args;
 		result.supports = this.supports;
@@ -585,10 +606,10 @@ public class PrBAF extends BAF {
 		result.argProb = this.argProb;
 		result.defProb = this.defProb;
 		result.supProb = this.supProb;
-		BAF cert = cert(Ae);
-		if ( cert.Sadmissible(new ArgSet(Ae)) ) {
+		BAF cert = cert(args);
+		if ( cert.Sadmissible(new ArgSet(args)) ) {
 			for ( String currentSupport : cert.supports.keySet() ) {
-				if ( Support.contains(Ae, currentSupport) ) {
+				if ( Support.contains(args, currentSupport) ) {
 					for ( String arg : cert.defeats.get(currentSupport) ) {
 						result.addArg(arg);
 						result.addDefeat(currentSupport, arg, 1);
@@ -598,7 +619,7 @@ public class PrBAF extends BAF {
 		}
 		else {
 			for ( String currentDefeats : cert.defeats.keySet() ) {
-				if ( Support.contains(Ae, currentDefeats) ) {
+				if ( Support.contains(args, currentDefeats) ) {
 					for ( String arg : cert.defeats.get(currentDefeats) ) {
 						result.addArg(arg);
 						result.addDefeat(currentDefeats, arg, 1);
@@ -609,13 +630,13 @@ public class PrBAF extends BAF {
 		return result;
 	}
 
-	private BAF cert(ArgSet Ae) { //VERIFY 
+	private BAF cert(ArgSet args) { //VERIFY 
 		BAF result = new BAF();
-		for ( String arg : Ae ) {
+		for ( String arg : args ) {
 			result.addArg(arg);
 		}
 		for ( String currentDefeats : defeats.keySet() ) {
-			if ( Support.contains(Ae, currentDefeats) ) {
+			if ( Support.contains(args, currentDefeats) ) {
 				for ( String arg : defeats.get(currentDefeats) ) {
 					result.addArg(arg);
 					result.addDefeat(currentDefeats, arg);
@@ -623,7 +644,7 @@ public class PrBAF extends BAF {
 			}
 		}
 		for ( String currentDefeated : defeatedBy.keySet() ) {
-			if ( Support.contains(Ae, currentDefeated) ) {
+			if ( Support.contains(args, currentDefeated) ) {
 				for ( String arg : defeats.get(currentDefeated) ) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentDefeated);
@@ -631,7 +652,7 @@ public class PrBAF extends BAF {
 			}
 		}
 		for ( String currentSupport : supports.keySet() ) {
-			if ( Support.contains(Ae, currentSupport) ) {
+			if ( Support.contains(args, currentSupport) ) {
 				for ( String arg : defeats.get(currentSupport) ) {
 					result.addArg(arg);
 					result.addDefeat(currentSupport, arg);
@@ -639,7 +660,7 @@ public class PrBAF extends BAF {
 			}
 		}
 		for ( String currentSupported : supportedBy.keySet() ) {
-			if ( Support.contains(Ae, currentSupported) ) {
+			if ( Support.contains(args, currentSupported) ) {
 				for ( String arg : defeats.get(currentSupported) ) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentSupported);
@@ -672,10 +693,10 @@ PA : A→ (0, 1] and PD : D → (0, 1].
 		return null;
 	}
 
-	public float calculatePr(List<String> Ae, ArgSet As, List<support.Pair> R_e) { //VERIFY 
+	public float calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 
 		float termA = 1;
 		for ( String arg : argProb.keySet() ) {
-			if ( As.contains(arg) ) {
+			if ( args.contains(arg) ) {
 				termA *= argProb.get(arg);
 			}
 			else {
@@ -683,8 +704,8 @@ PA : A→ (0, 1] and PD : D → (0, 1].
 			}
 		}
 		float termB = 1;
-		for ( support.Pair currentR_e : R_e ) {
-			if ( Support.contains(As, currentR_e) ) {
+		for ( support.Pair currentR_e : pairs ) {
+			if ( Support.contains(args, currentR_e) ) {
 				termB *= currentR_e.getProbability();
 			}
 			else {
