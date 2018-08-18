@@ -6,6 +6,7 @@ import structures.ArgSet;
 import structures.PrBAF;
 import support.Constants.SemanticsType;
 import support.Pair;
+import support.Support;
 
 
 public class TestImprovedPrBAF {
@@ -39,15 +40,15 @@ public class TestImprovedPrBAF {
 
 	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
 		float Pr = 0.0f;
-		List<String> A_e = baf.computeAe();
+		ArgSet A_e = baf.computeAe();
 		List<Pair> R_e = baf.computeRe(A_e);
-		for ( String currentA_e : A_e ) {
+		for ( ArgSet A_pe : Support.getAllPermutations(A_e) ) {
 			for ( Pair currentR_e : R_e ) {
 				float Pr_s = 0.0f;
-				if ( currentR_e.getA().equals(currentA_e) || currentR_e.getB().equals(currentA_e)  ) {
-					PrBAF F_p = baf.contract(currentA_e, currentR_e);
-					float Pr_p = F_p.calculatePr(currentA_e, R_e); 
-					PrBAF F_s = F_p.complete(currentA_e, currentR_e);
+				if ( Support.contains(A_pe, currentR_e) ) {
+					PrBAF F_p = baf.contract(A_pe, currentR_e);
+					float Pr_p = F_p.calculatePr(A_e, A_pe, R_e); 
+					PrBAF F_s = F_p.complete(A_pe, currentR_e);
 					if ( sem == SemanticsType.s_ad ) { 
 						if ( !F_s.safe(S) ) {
 							Pr_s = 0.0f;
