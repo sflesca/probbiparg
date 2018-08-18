@@ -525,8 +525,8 @@ public class PrBAF extends BAF {
 		return baf;
 	}
 
-	public ArgSet computeAe() {
-		ArgSet result = new ArgSet();
+	public List<String> computeAe() {
+		List<String> result = new LinkedList<>();
 		for ( String currentArg : args ) {
 			if ( supports.containsKey(currentArg) || supportedBy.containsKey(currentArg) ) {
 				result.add(currentArg);
@@ -535,7 +535,7 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	public List<support.Pair> computeRe(ArgSet A_e) {
+	public List<support.Pair> computeRe(List<String> A_e) {
 		List<support.Pair> result = new LinkedList<>();
 		// checking in R_a
 		for ( String currentDefeats : defeats.keySet() ) {
@@ -556,7 +556,7 @@ public class PrBAF extends BAF {
 		return result;
 	}
 
-	private boolean checkReCondition(String currentDefeats, String currentDefeated, ArgSet A_e) {
+	private boolean checkReCondition(String currentDefeats, String currentDefeated, List<String> A_e) {
 		for ( String arg : A_e ) {
 			if ( arg.equals(currentDefeated) || arg.equals(currentDefeated) ) {
 				return true;
@@ -672,7 +672,7 @@ PA : A→ (0, 1] and PD : D → (0, 1].
 		return null;
 	}
 
-	public float calculatePr(ArgSet Ae, ArgSet As, List<support.Pair> R_e) { //VERIFY 
+	public float calculatePr(List<String> Ae, ArgSet As, List<support.Pair> R_e) { //VERIFY 
 		float termA = 1;
 		for ( String arg : argProb.keySet() ) {
 			if ( As.contains(arg) ) {

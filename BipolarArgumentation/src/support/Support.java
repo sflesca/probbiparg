@@ -9,10 +9,18 @@ import structures.ArgSet;
 public class Support {
 	
 	
-	public static List<ArgSet> getAllPermutations(ArgSet args) {
+	public static List<ArgSet> getAllPermutations(List<String> args) {
 		List<ArgSet> result = new LinkedList<ArgSet>();
-		result.add(new ArgSet());
-		//TODO
+		int size = args.size();
+	    for ( int i = 0; i < (1 << size); i ++ ) {
+	    		ArgSet current = new ArgSet();
+	    		for ( int j = 0; j < size; j ++ ) {
+	    			if ( (i & (1 << j)) > 0 ) {
+	    				current.add(args.get(j));
+	            }
+	    		}
+	    		result.add(current);
+		}
 		return result;
 	}
 	

@@ -40,7 +40,7 @@ public class TestImprovedPrBAF {
 
 	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
 		float Pr = 0.0f;
-		ArgSet A_e = baf.computeAe();
+		List<String> A_e = baf.computeAe();
 		List<Pair> R_e = baf.computeRe(A_e);
 		for ( ArgSet A_pe : Support.getAllPermutations(A_e) ) {
 			for ( Pair currentR_e : R_e ) {
