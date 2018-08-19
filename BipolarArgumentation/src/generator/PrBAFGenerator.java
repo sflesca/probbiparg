@@ -17,7 +17,7 @@ public class PrBAFGenerator {
 			for (int j = 0; j < numarg; j++)
 				if (Math.random() <= percatt)
 					prbaf.addDefeat("a" + i, "a" + j, Math.random());
-		
+
 		for (int i = 0; i < numarg; i++)
 			for (int j = 0; j < numarg; j++)
 				if (Math.random() <= percsup)
@@ -25,7 +25,7 @@ public class PrBAFGenerator {
 		return prbaf;
 	}
 
-	static public void printPrBAF(PrBAF prbaf, PrintStream f) {
+	static public void printPrBAF(PrBAF prbaf, PrintWriter f) {
 		f.println(prbaf.args.size());
 		for (String a : prbaf.args) {
 			f.println(a + " " + prbaf.argProb.get(a));
@@ -49,11 +49,11 @@ public class PrBAFGenerator {
 		f.println(numsupports);
 		for (String a : prbaf.supports.keySet()) {
 			for (String c : prbaf.supports.get(a)) {
-				f.println( a + " " + c + " " + prbaf.supProb.get(a).get(c));
+				f.println(a + " " + c + " " + prbaf.supProb.get(a).get(c));
 			}
 		}
 	}
-	
+
 	static public PrBAF readPrBA(InputStream f) {
 		PrBAF prbaf = new PrBAF();
 		Scanner sc = new Scanner(System.in);
@@ -69,7 +69,7 @@ public class PrBAFGenerator {
 			String arg1 = sc.next();
 			String arg2 = sc.next();
 			String sprob = sc.next();
-			double prob = Float.parseFloat(sprob);		
+			double prob = Float.parseFloat(sprob);
 			prbaf.addDefeat(arg1, arg2, prob);
 		}
 		int numsup = sc.nextInt();
@@ -77,16 +77,29 @@ public class PrBAFGenerator {
 			String arg1 = sc.next();
 			String arg2 = sc.next();
 			String sprob = sc.next();
-			double prob = Float.parseFloat(sprob);		
+			double prob = Float.parseFloat(sprob);
 			prbaf.addSupport(arg1, arg2, prob);
 		}
+		sc.close();
 		return prbaf;
 	}
-	
+
 	public static void main(String[] args) {
-		//PrBAF prbaf = generate(5,.2,.05);
-		PrBAF prbaf = readPrBA(System.in);
-		printPrBAF(prbaf, System.out);
+		// PrBAF prbaf = readPrBA(System.in);
+		int[] numargs = { 6, 8, 10, 12, 14, 16, 18, 20 };
+		for (int i : numargs) {
+			for (int j = 0; j < 10; j++) {
+				PrBAF prbaf = generate(i, .2, .03);
+				try {
+					PrintWriter out = new PrintWriter("prbafs/" + i + "prbaf-"+j+".txt", "UTF-8");
+					printPrBAF(prbaf, out);
+					out.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
