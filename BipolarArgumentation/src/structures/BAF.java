@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class BAF extends DAF {
 
-	protected Map<String, ArgSet> supports = new HashMap<>();
+	public Map<String, ArgSet> supports = new HashMap<>();
 	protected Map<String, ArgSet> supportedBy = new HashMap<>();
 	private BAF extended;
 	protected boolean stillValid;

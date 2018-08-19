@@ -9,8 +9,8 @@ import java.util.Map;
 public class DAF {
     double  weight = 1;
         
-    protected ArgSet args = new ArgSet();
-    protected Map<String,ArgSet> defeats = new HashMap<String,ArgSet>();
+    public ArgSet args = new ArgSet();
+    public Map<String,ArgSet> defeats = new HashMap<String,ArgSet>();
     protected Map<String,ArgSet> defeatedBy = new HashMap<String,ArgSet>();
     public static final ArgSet emptySet = new ArgSet ();
 

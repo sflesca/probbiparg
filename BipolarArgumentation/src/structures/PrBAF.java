@@ -16,11 +16,11 @@ import support.Support;
 
 public class PrBAF extends BAF {
 
-	private Map<String, Double> argProb = new HashMap<>();
-	private Map<String, ArgProb> defProb = new HashMap<>();
-	private Map<String, ArgProb> supProb = new HashMap<>();
+	public Map<String, Double> argProb = new HashMap<>();
+	public Map<String, ArgProb> defProb = new HashMap<>();
+	public Map<String, ArgProb> supProb = new HashMap<>();
 
-	private class ArgProb extends HashMap<String, Double> {
+	public class ArgProb extends HashMap<String, Double> {
 		private static final long serialVersionUID = 1L;
 	};
 
