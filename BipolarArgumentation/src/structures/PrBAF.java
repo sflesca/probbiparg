@@ -549,7 +549,7 @@ public class PrBAF extends BAF {
 		for ( String currentSupports : supports.keySet() ) {
 			for ( String currentSupported : supports.get(currentSupports) ) {
 				if ( checkReCondition(currentSupports, currentSupported, args) ) {
-					result.add(new support.Pair(currentSupports, currentSupported, defProb.get(currentSupports).get(currentSupported)));
+					result.add(new support.Pair(currentSupports, currentSupported, supProb.get(currentSupports).get(currentSupported)));
 				}
 			}
 		}
@@ -585,8 +585,8 @@ public class PrBAF extends BAF {
 				}
 			}
 		}
-		for ( String arg : result.args ) {
-			if ( args.contains(arg) ) {
+		for ( String arg : args ) {
+			if ( result.args.contains(arg) ) {
 				result.argProb.put(arg, 1.0);
 			}
 			else {
@@ -645,7 +645,7 @@ public class PrBAF extends BAF {
 		}
 		for ( String currentDefeated : defeatedBy.keySet() ) {
 			if ( Support.contains(args, currentDefeated) ) {
-				for ( String arg : defeats.get(currentDefeated) ) {
+				for ( String arg : defeatedBy.get(currentDefeated) ) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentDefeated);
 				}
@@ -653,7 +653,7 @@ public class PrBAF extends BAF {
 		}
 		for ( String currentSupport : supports.keySet() ) {
 			if ( Support.contains(args, currentSupport) ) {
-				for ( String arg : defeats.get(currentSupport) ) {
+				for ( String arg : supports.get(currentSupport) ) {
 					result.addArg(arg);
 					result.addDefeat(currentSupport, arg);
 				}
@@ -661,7 +661,7 @@ public class PrBAF extends BAF {
 		}
 		for ( String currentSupported : supportedBy.keySet() ) {
 			if ( Support.contains(args, currentSupported) ) {
-				for ( String arg : defeats.get(currentSupported) ) {
+				for ( String arg : supportedBy.get(currentSupported) ) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentSupported);
 				}
@@ -670,27 +670,14 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	public float computePrAAF(SemanticsType aafsem) {
-		// TODO Auto-generated method stub
-		// tocl
+	public float computePrAAF(SemanticsType aafsem) { //TODO
+		if ( aafsem == SemanticsType.st ) {
+			
+		}
+		else {
+			
+		}
 		return 0;
-	}
-	
-	public PrBAF toPrAAF() {
-		// TODO Auto-generated method stub
-		// tocl sommatoria granbde per semantica stable
-		
-		/*
-		  A probabilistic BAF (prBAF) F is a tuple F = ⟨A,Ra,Rs,P⟩, where F = ⟨A,Ra,Rs⟩ is a BAF 
-		  and P is a probability distri- bution function (pdf) over the set
-		   PS = {α = ⟨A′,R′a,R′s⟩|A′ ⊆ A∧ R′a ⊆ (A′ × A′) ∩ Ra ∧ R′s ⊆ (A′ × A′) ∩ Rs}.
-		  
-		  Definition 2.2 (PrAF). A probabilistic argumentation framework (PrAF) is a tuple
-A, PA, D, PD, where A, D is an AAF and PA and PD are, respectively, functions
-assigning a nonzero3 probability value to each argument in A and defeat in D, that is,
-PA : A→ (0, 1] and PD : D → (0, 1].
-		 */
-		return null;
 	}
 
 	public float calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 

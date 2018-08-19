@@ -62,7 +62,7 @@ public class TestImprovedPrBAF {
 				else {
 					prPrime = 1.0f;
 				}
-				PrBAF fSigned = fStar.toPrAAF();
+				PrBAF fSigned = fStar;
 				SemanticsType aafsem;
 				if ( sem == SemanticsType.st ) { 
 					aafsem = SemanticsType.st; 
