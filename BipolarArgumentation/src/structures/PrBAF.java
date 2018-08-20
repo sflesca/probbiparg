@@ -670,14 +670,24 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	public float computePrAAF(SemanticsType aafsem) { //TODO
+	public float computePrAAF(SemanticsType aafsem) {
+		// calculating p1
+		float p1 = 1;
+		for ( String arg : args ) {
+			p1 *= argProb.get(arg);
+		}
+		// calculating p2
+		float p2 = 1;
+		//TODO
+		// calculating p3
+		float p3 = 1;
 		if ( aafsem == SemanticsType.st ) {
-			
+
 		}
 		else {
 			
 		}
-		return 0;
+		return p1 * p2 * p3;
 	}
 
 	public float calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 

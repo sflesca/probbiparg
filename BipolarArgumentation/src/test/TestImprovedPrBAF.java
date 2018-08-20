@@ -35,7 +35,7 @@ public class TestImprovedPrBAF {
 		long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Completed!");
 		System.out.println("Result: " + result);
-		System.out.println("Computation Time: " + elapsedTime);
+		System.out.println("Computation Time: " + elapsedTime + " ms");
 	}
 
 	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {

@@ -3,7 +3,9 @@ package structures;
 import java.util.HashSet;
 
 public class ArgSet extends HashSet<String> {
+	private static final long serialVersionUID = 1L;
 
+	
 	public ArgSet (ArgSet set) {
         super (set);
     }
