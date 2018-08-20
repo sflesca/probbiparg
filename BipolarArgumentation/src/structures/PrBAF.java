@@ -143,114 +143,115 @@ public class PrBAF extends BAF {
 			return false;
 		return true;
 	}
-	
-	public Iterator<BAF> possibleWorlds(){
+
+	public Iterator<BAF> possibleWorlds() {
 		return pw().iterator();
 	}
 
-	
-	public Iterator<BAF> worlds(){
+	public Iterator<BAF> worlds() {
 		return new Iterator<BAF>() {
-			Iterator<Set<String>> args=new PowerSet<String>(getArgs()).iterator();
-			Iterator<Set<Pair<String,String>>> defs;
+			Iterator<Set<String>> args = new PowerSet<String>(getArgs()).iterator();
+			Iterator<Set<Pair<String, String>>> defs;
 			Iterator<Set<Pair<String, String>>> sups;
 			BAF currArgs;
 			BAF currSup;
 			BAF currDef;
-			boolean avanzaArgs=true;
+			boolean avanzaArgs = true;
 			boolean avanzaSup;
 			boolean avanzaDef;
+
 			@Override
 			public boolean hasNext() {
-				return avanzaArgs||avanzaDef||avanzaSup;
+				return avanzaArgs || avanzaDef || avanzaSup;
 			}
-			
+
 			@Override
 			public BAF next() {
-				
-				if(avanzaDef) {
-					currDef=currSup.copy();
-					for(Pair<String,String> d:defs.next())
+
+				if (avanzaDef) {
+					currDef = currSup.copy();
+					for (Pair<String, String> d : defs.next())
 						currDef.addDefeat(d.getKey(), d.getValue());
-					if(!defs.hasNext())
-						avanzaDef=false;
-						return currDef;
+					if (!defs.hasNext())
+						avanzaDef = false;
+					return currDef;
 				}
-				if(avanzaSup) {
-					currSup=currArgs.copy();
-					for(Pair<String,String> d:sups.next())
+				if (avanzaSup) {
+					currSup = currArgs.copy();
+					for (Pair<String, String> d : sups.next())
 						currSup.addSupport(d.getKey(), d.getValue());
-						defs=new PowerSet<Pair<String,String>>(generateDefeats(currSup.getArgs())).iterator();
-						avanzaDef=true;
-					if(!sups.hasNext())
-						avanzaSup=false;
-					currDef=currSup.copy();
-					for(Pair<String,String> d:defs.next())
+					defs = new PowerSet<Pair<String, String>>(generateDefeats(currSup.getArgs())).iterator();
+					avanzaDef = true;
+					if (!sups.hasNext())
+						avanzaSup = false;
+					currDef = currSup.copy();
+					for (Pair<String, String> d : defs.next())
 						currDef.addDefeat(d.getKey(), d.getValue());
-					if(!defs.hasNext())
-						avanzaDef=false;
-						return currDef;
+					if (!defs.hasNext())
+						avanzaDef = false;
+					return currDef;
 				}
-				if(avanzaArgs) {
-					currArgs=new BAF();
-					for(String a:args.next())
+				if (avanzaArgs) {
+					currArgs = new BAF();
+					for (String a : args.next())
 						currArgs.addArg(a);
-						sups=new PowerSet<Pair<String,String>>(generateSupports(currArgs.getArgs())).iterator();
-						avanzaSup=true;
-						currSup=currArgs.copy();
-						for(Pair<String,String> d:sups.next())
-							currSup.addSupport(d.getKey(), d.getValue());
-							defs=new PowerSet<Pair<String,String>>(generateDefeats(currSup.getArgs())).iterator();
-							avanzaDef=true;
-						if(!sups.hasNext())
-							avanzaSup=false;
-						currDef=currSup.copy();
-						for(Pair<String,String> d:defs.next())
-							currDef.addDefeat(d.getKey(), d.getValue());
-						if(!defs.hasNext())
-							avanzaDef=false;
-						
-					if(!args.hasNext())
-						avanzaArgs=false;
-						return currDef;
+					sups = new PowerSet<Pair<String, String>>(generateSupports(currArgs.getArgs())).iterator();
+					avanzaSup = true;
+					currSup = currArgs.copy();
+					for (Pair<String, String> d : sups.next())
+						currSup.addSupport(d.getKey(), d.getValue());
+					defs = new PowerSet<Pair<String, String>>(generateDefeats(currSup.getArgs())).iterator();
+					avanzaDef = true;
+					if (!sups.hasNext())
+						avanzaSup = false;
+					currDef = currSup.copy();
+					for (Pair<String, String> d : defs.next())
+						currDef.addDefeat(d.getKey(), d.getValue());
+					if (!defs.hasNext())
+						avanzaDef = false;
+
+					if (!args.hasNext())
+						avanzaArgs = false;
+					return currDef;
 				}
 				return null;
 			}
 
-		
 			private Set<Pair<String, String>> generateDefeats(ArgSet args) {
-				Set<Pair<String,String>> set = new HashSet<>();
-				for(String a:args)
-					for(String b: getDefeats(a))
-						if(args.contains(b))
-							set.add(new Pair<String,String>(a,b));
+				Set<Pair<String, String>> set = new HashSet<>();
+				for (String a : args)
+					for (String b : getDefeats(a))
+						if (args.contains(b))
+							set.add(new Pair<String, String>(a, b));
 				return set;
 			}
 
 			private Set<Pair<String, String>> generateSupports(ArgSet args) {
-				Set<Pair<String,String>> set = new HashSet<>();
-				for(String a:args)
-					for(String b: getSupports(a))
-						if(args.contains(b))
-							set.add(new Pair<String,String>(a,b));
+				Set<Pair<String, String>> set = new HashSet<>();
+				for (String a : args)
+					for (String b : getSupports(a))
+						if (args.contains(b))
+							set.add(new Pair<String, String>(a, b));
 				return set;
 			}
-			
+
 		};
 	}
-	public Iterator<BAF> notZeroProbPossibleWorlds(){
+
+	public Iterator<BAF> notZeroProbPossibleWorlds() {
 		return new Iterator<BAF>() {
 			Iterator<BAF> it = worlds();
 			BAF curr;
+
 			@Override
 			public boolean hasNext() {
-				if(!it.hasNext())
+				if (!it.hasNext())
 					return false;
-				curr=it.next();
-				while(it.hasNext()&&Double.compare(computeProb(curr),0d)==0) {
-					curr=it.next();
+				curr = it.next();
+				while (it.hasNext() && Double.compare(computeProb(curr), 0d) == 0) {
+					curr = it.next();
 				}
-				if(Double.compare(computeProb(curr),0d)==0)
+				if (Double.compare(computeProb(curr), 0d) == 0)
 					return false;
 				return true;
 			}
@@ -259,128 +260,120 @@ public class PrBAF extends BAF {
 			public BAF next() {
 				return curr;
 			}
+
 			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}
-			
+
 		};
 	}
+
 	public Set<BAF> pw() {
 		Set<BAF> res = new HashSet<>();
-		PowerSet<String> argPower=new PowerSet<>(getArgs());
-		for(Set<String> s: argPower)
-		{
-			 BAF  baf= new BAF();
-			 for(String a:s)
-				 baf.addArg(a);
-			 res.add(baf); 
-			 
-			 Set<Pair<String,String>> sup=new HashSet<>();
-			 for(String a: getSupports().keySet())
-					for(String b: getSupports(a))
-						if(s.contains(a)&&s.contains(b)) 
-							sup.add(new Pair<String,String>(a,b));
-						
-			 PowerSet<Pair<String,String>> supPower=new PowerSet<>(sup);
-			 			for(Set<Pair<String ,String>> supP:supPower)
-			 			{
-				 			BAF baf2=baf.copy();
-				 				for(Pair<String,String> pair:supP)
-				 					baf2.addSuport(pair.getKey(),pair.getValue());
-				 				res.add(baf2);
-				 				
-				 				
-				 				
-				 				Set<Pair<String,String>> def=new HashSet<>();
-				 				 for(String a: getDefeats().keySet())
-				 						for(String b: getDefeats(a))
-				 							if(s.contains(a)&&s.contains(b)) 
-				 								def.add(new Pair<String,String>(a,b));
-				 							
-				 				 PowerSet<Pair<String,String>> defPower=new PowerSet<>(def);
-				 				 			for(Set<Pair<String ,String>> defP:defPower)
-				 				 			{
-				 					 			BAF baf3=baf2.copy();
-				 					 				for(Pair<String,String> pair:defP)
-				 					 					baf3.addDefeat(pair.getKey(),pair.getValue());
-				 					 				res.add(baf3);	
-				 				 			}		
-			 			}
-			 			Set<Pair<String,String>> def=new HashSet<>();
-		 				 for(String a: getDefeats().keySet())
-		 						for(String b: getDefeats(a))
-		 							if(s.contains(a)&&s.contains(b)) 
-		 								def.add(new Pair<String,String>(a,b));
-		 							
-		 				 PowerSet<Pair<String,String>> defPower=new PowerSet<>(def);
-		 				 			for(Set<Pair<String ,String>> defP:defPower)
-		 				 			{
-		 					 			BAF baf3=baf.copy();
-		 					 				for(Pair<String,String> pair:defP)
-		 					 					baf3.addDefeat(pair.getKey(),pair.getValue());
-		 					 				res.add(baf3);	
-		 				 			}
-						}
+		PowerSet<String> argPower = new PowerSet<>(getArgs());
+		for (Set<String> s : argPower) {
+			BAF baf = new BAF();
+			for (String a : s)
+				baf.addArg(a);
+			res.add(baf);
+
+			Set<Pair<String, String>> sup = new HashSet<>();
+			for (String a : getSupports().keySet())
+				for (String b : getSupports(a))
+					if (s.contains(a) && s.contains(b))
+						sup.add(new Pair<String, String>(a, b));
+
+			PowerSet<Pair<String, String>> supPower = new PowerSet<>(sup);
+			for (Set<Pair<String, String>> supP : supPower) {
+				BAF baf2 = baf.copy();
+				for (Pair<String, String> pair : supP)
+					baf2.addSuport(pair.getKey(), pair.getValue());
+				res.add(baf2);
+
+				Set<Pair<String, String>> def = new HashSet<>();
+				for (String a : getDefeats().keySet())
+					for (String b : getDefeats(a))
+						if (s.contains(a) && s.contains(b))
+							def.add(new Pair<String, String>(a, b));
+
+				PowerSet<Pair<String, String>> defPower = new PowerSet<>(def);
+				for (Set<Pair<String, String>> defP : defPower) {
+					BAF baf3 = baf2.copy();
+					for (Pair<String, String> pair : defP)
+						baf3.addDefeat(pair.getKey(), pair.getValue());
+					res.add(baf3);
+				}
+			}
+			Set<Pair<String, String>> def = new HashSet<>();
+			for (String a : getDefeats().keySet())
+				for (String b : getDefeats(a))
+					if (s.contains(a) && s.contains(b))
+						def.add(new Pair<String, String>(a, b));
+
+			PowerSet<Pair<String, String>> defPower = new PowerSet<>(def);
+			for (Set<Pair<String, String>> defP : defPower) {
+				BAF baf3 = baf.copy();
+				for (Pair<String, String> pair : defP)
+					baf3.addDefeat(pair.getKey(), pair.getValue());
+				res.add(baf3);
+			}
+		}
 		return res;
 	}
 
-	
+	public class PowerSet<E> implements Iterator<Set<E>>, Iterable<Set<E>> {
+		private E[] arr = null;
+		private BitSet bset = null;
 
+		@SuppressWarnings("unchecked")
+		public PowerSet(Set<E> set) {
+			arr = (E[]) set.toArray();
+			bset = new BitSet(arr.length + 1);
+		}
 
-	public class PowerSet<E> implements Iterator<Set<E>>,Iterable<Set<E>>{
-	    private E[] arr = null;
-	    private BitSet bset = null;
+		@Override
+		public boolean hasNext() {
+			return !bset.get(arr.length);
+		}
 
-	    @SuppressWarnings("unchecked")
-		public PowerSet(Set<E> set)
-	    {
-	        arr = (E[])set.toArray();
-	        bset = new BitSet(arr.length + 1);
-	    }
+		@Override
+		public Set<E> next() {
+			Set<E> returnSet = new HashSet<E>();
+			for (int i = 0; i < arr.length; i++) {
+				if (bset.get(i))
+					returnSet.add(arr[i]);
+			}
+			for (int i = 0; i < bset.size(); i++) {
+				if (!bset.get(i)) {
+					bset.set(i);
+					break;
+				} else
+					bset.clear(i);
+			}
+			return returnSet;
+		}
 
-	    @Override
-	    public boolean hasNext() {
-	        return !bset.get(arr.length);
-	    }
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException("Not Supported!");
+		}
 
-	    @Override
-	    public Set<E> next() {
-	        Set<E> returnSet = new HashSet<E>();
-	        for(int i = 0; i < arr.length; i++){
-	            if(bset.get(i))
-	                returnSet.add(arr[i]);
-	        }
-	        for(int i = 0; i < bset.size(); i++){
-	            if(!bset.get(i)){
-	                bset.set(i);
-	                break;
-	            }else
-	                bset.clear(i);
-	        }
-	        return returnSet;
-	    }
-
-	    @Override
-	    public void remove() {
-	        throw new UnsupportedOperationException("Not Supported!");
-	    }
-
-	    @Override
-	    public Iterator<Set<E>> iterator() {
-	        return this;
-	    }
+		@Override
+		public Iterator<Set<E>> iterator() {
+			return this;
+		}
 
 	}
+
 	public double computeProb(BAF baf) {
 		PrBAF prBaf = this;
 		double prob = 1;
 		ArgSet difference = new ArgSet(prBaf.getArgs());
 		difference.removeAll(baf.getArgs());
 
-		for (String a : baf.args) 
-				prob *= argProb.get(a);
-		
+		for (String a : baf.args)
+			prob *= argProb.get(a);
 
 		for (String a : difference)
 			prob *= (1 - argProb.get(a));
@@ -392,31 +385,28 @@ public class PrBAF extends BAF {
 		for (String a : baf.getArgs())
 			for (String b : baf.getSupports(a))
 				prob *= supProb.get(a).get(b);
-		Map<String, ArgSet> defeatsNotOccurredInBaf = new HashMap<>(getDefeats().keySet().stream().collect(Collectors.toMap(a->a, a->new ArgSet(getDefeats(a)))));
+		Map<String, ArgSet> defeatsNotOccurredInBaf = new HashMap<>(
+				getDefeats().keySet().stream().collect(Collectors.toMap(a -> a, a -> new ArgSet(getDefeats(a)))));
 
-		for(String a:getDefeats().keySet())
-			for(String b: getDefeats(a))
-				if(!baf.getArgs().contains(a)||!baf.getArgs().contains(b))
+		for (String a : getDefeats().keySet())
+			for (String b : getDefeats(a))
+				if (!baf.getArgs().contains(a) || !baf.getArgs().contains(b))
 					defeatsNotOccurredInBaf.get(a).remove(b);
-		
-				
-		for(String a: baf.getDefeats().keySet())
-			for(String b: baf.getDefeats(a))
+
+		for (String a : baf.getDefeats().keySet())
+			for (String b : baf.getDefeats(a))
 				defeatsNotOccurredInBaf.get(a).remove(b);
-		
-		
-		Map<String, ArgSet> supportsNotOccurredInBaf = new HashMap<>(getSupports().keySet().stream().collect(Collectors.toMap(a->a, a->new ArgSet(getSupports(a)))));
-		for(String a:getSupports().keySet())
-			for(String b: getSupports(a))
-				if(!baf.getArgs().contains(a)||!baf.getArgs().contains(b))
+
+		Map<String, ArgSet> supportsNotOccurredInBaf = new HashMap<>(
+				getSupports().keySet().stream().collect(Collectors.toMap(a -> a, a -> new ArgSet(getSupports(a)))));
+		for (String a : getSupports().keySet())
+			for (String b : getSupports(a))
+				if (!baf.getArgs().contains(a) || !baf.getArgs().contains(b))
 					supportsNotOccurredInBaf.get(a).remove(b);
-		
-				
-		for(String a: baf.getSupports().keySet())
-			for(String b: baf.getSupports(a))
+
+		for (String a : baf.getSupports().keySet())
+			for (String b : baf.getSupports(a))
 				supportsNotOccurredInBaf.get(a).remove(b);
-	
-	
 
 		for (String a : defeatsNotOccurredInBaf.keySet())
 			for (String b : defeatsNotOccurredInBaf.get(a))
@@ -505,7 +495,7 @@ public class PrBAF extends BAF {
 		}
 		return prob;
 	}
-	
+
 	@Override
 	public PrBAF copy() {
 		PrBAF baf = new PrBAF();
@@ -520,36 +510,38 @@ public class PrBAF extends BAF {
 		for (String a : getArgs()) {
 			for (String b : getSupports(a)) {
 				baf.addSupport(a, b);
-			} 
+			}
 		}
 		return baf;
 	}
 
 	public List<String> computeAe() {
 		List<String> result = new LinkedList<>();
-		for ( String currentArg : args ) {
-			if ( supports.containsKey(currentArg) || supportedBy.containsKey(currentArg) ) {
+		for (String currentArg : args) {
+			if (supports.containsKey(currentArg) || supportedBy.containsKey(currentArg)) {
 				result.add(currentArg);
 			}
 		}
 		return result;
 	}
-	
+
 	public List<support.Pair> computeRe(List<String> args) {
 		List<support.Pair> result = new LinkedList<>();
 		// checking in R_a
-		for ( String currentDefeats : defeats.keySet() ) {
-			for ( String currentDefeated : defeats.get(currentDefeats) ) {
-				if ( checkReCondition(currentDefeats, currentDefeated, args) ) {
-					result.add(new support.Pair(currentDefeats, currentDefeated, defProb.get(currentDefeats).get(currentDefeated)));
+		for (String currentDefeats : defeats.keySet()) {
+			for (String currentDefeated : defeats.get(currentDefeats)) {
+				if (checkReCondition(currentDefeats, currentDefeated, args)) {
+					result.add(new support.Pair(currentDefeats, currentDefeated,
+							defProb.get(currentDefeats).get(currentDefeated)));
 				}
 			}
 		}
 		// checking in R_s
-		for ( String currentSupports : supports.keySet() ) {
-			for ( String currentSupported : supports.get(currentSupports) ) {
-				if ( checkReCondition(currentSupports, currentSupported, args) ) {
-					result.add(new support.Pair(currentSupports, currentSupported, supProb.get(currentSupports).get(currentSupported)));
+		for (String currentSupports : supports.keySet()) {
+			for (String currentSupported : supports.get(currentSupports)) {
+				if (checkReCondition(currentSupports, currentSupported, args)) {
+					result.add(new support.Pair(currentSupports, currentSupported,
+							supProb.get(currentSupports).get(currentSupported)));
 				}
 			}
 		}
@@ -557,52 +549,54 @@ public class PrBAF extends BAF {
 	}
 
 	private boolean checkReCondition(String currentDefeats, String currentDefeated, List<String> args) {
-		for ( String arg : args ) {
-			if ( arg.equals(currentDefeated) || arg.equals(currentDefeated) ) {
+		for (String arg : args) {
+			if (arg.equals(currentDefeated) || arg.equals(currentDefeated)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public PrBAF contract(ArgSet args, List<support.Pair> pairs, ArgSet args1, List<support.Pair> pairs1) { //VERIFY 
+	public PrBAF contract(ArgSet args, List<support.Pair> pairs, ArgSet args1, List<support.Pair> pairs1) { // VERIFY
 		PrBAF result = copy();
-		for ( support.Pair currentPair : pairs ) {
-			if ( result.defeats.containsKey(currentPair.getA()) ) {
-				if ( result.defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
+		for (support.Pair currentPair : pairs) {
+			if (result.defeats.containsKey(currentPair.getA())) {
+				if (result.defeats.get(currentPair.getA()).contains(currentPair.getB())) {
 					result.addDefeat(currentPair.getA(), currentPair.getB(), 1);
 				}
 			}
-			if ( result.supports.containsKey(currentPair.getA()) ) {
-				if ( result.supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
+			if (result.supports.containsKey(currentPair.getA())) {
+				if (result.supports.get(currentPair.getA()).contains(currentPair.getB())) {
 					result.addSupport(currentPair.getA(), currentPair.getB(), 1);
 				}
 			}
 		}
-		for ( support.Pair currentPair : pairs1 ) {
-			if ( result.defeats.containsKey(currentPair.getA()) ) {
-				if ( result.defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
+		for (support.Pair currentPair : pairs1) {
+			if (result.defeats.containsKey(currentPair.getA())) {
+				if (result.defeats.get(currentPair.getA()).contains(currentPair.getB())) {
 					result.removeDefeat(currentPair.getA(), currentPair.getB());
 				}
 			}
-			if ( result.supports.containsKey(currentPair.getA()) ) {
-				if ( result.supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
+			if (result.supports.containsKey(currentPair.getA())) {
+				if (result.supports.get(currentPair.getA()).contains(currentPair.getB())) {
 					result.removeSupport(currentPair.getA(), currentPair.getB());
 				}
 			}
 		}
-		for ( String arg : args ) {
-			if ( result.args.contains(arg) ) {
+		for (String arg : args)
+			if (result.args.contains(arg)) {
 				result.argProb.put(arg, 1.0);
 			}
-			else {
-				result.removeArg(arg);
+		for (String arg1 : args1) {
+			if (result.args.contains(arg1)) {
+				result.removeArg(arg1);
 			}
 		}
+
 		return result;
 	}
 
-	public PrBAF complete(ArgSet args, List<support.Pair> pairs) { //VERIFY
+	public PrBAF complete(ArgSet args, List<support.Pair> pairs) { // VERIFY
 		PrBAF result = new PrBAF();
 		result.args = this.args;
 		result.supports = this.supports;
@@ -613,20 +607,19 @@ public class PrBAF extends BAF {
 		result.defProb = this.defProb;
 		result.supProb = this.supProb;
 		BAF cert = cert(args);
-		if ( cert.Sadmissible(new ArgSet(args)) ) {
-			for ( String currentSupport : cert.supports.keySet() ) {
-				if ( Support.contains(args, currentSupport) ) {
-					for ( String arg : cert.defeats.get(currentSupport) ) {
+		if (cert.Sadmissible(new ArgSet(args))) {
+			for (String currentSupport : cert.supports.keySet()) {
+				if (Support.contains(args, currentSupport)) {
+					for (String arg : cert.defeats.get(currentSupport)) {
 						result.addArg(arg);
 						result.addDefeat(currentSupport, arg, 1);
 					}
 				}
 			}
-		}
-		else {
-			for ( String currentDefeats : cert.defeats.keySet() ) {
-				if ( Support.contains(args, currentDefeats) ) {
-					for ( String arg : cert.defeats.get(currentDefeats) ) {
+		} else {
+			for (String currentDefeats : cert.defeats.keySet()) {
+				if (Support.contains(args, currentDefeats)) {
+					for (String arg : cert.defeats.get(currentDefeats)) {
 						result.addArg(arg);
 						result.addDefeat(currentDefeats, arg, 1);
 					}
@@ -636,38 +629,38 @@ public class PrBAF extends BAF {
 		return result;
 	}
 
-	private BAF cert(ArgSet args) { //VERIFY 
+	private BAF cert(ArgSet args) { // VERIFY
 		BAF result = new BAF();
-		for ( String arg : args ) {
+		for (String arg : args) {
 			result.addArg(arg);
 		}
-		for ( String currentDefeats : defeats.keySet() ) {
-			if ( Support.contains(args, currentDefeats) ) {
-				for ( String arg : defeats.get(currentDefeats) ) {
+		for (String currentDefeats : defeats.keySet()) {
+			if (Support.contains(args, currentDefeats)) {
+				for (String arg : defeats.get(currentDefeats)) {
 					result.addArg(arg);
 					result.addDefeat(currentDefeats, arg);
 				}
 			}
 		}
-		for ( String currentDefeated : defeatedBy.keySet() ) {
-			if ( Support.contains(args, currentDefeated) ) {
-				for ( String arg : defeatedBy.get(currentDefeated) ) {
+		for (String currentDefeated : defeatedBy.keySet()) {
+			if (Support.contains(args, currentDefeated)) {
+				for (String arg : defeatedBy.get(currentDefeated)) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentDefeated);
 				}
 			}
 		}
-		for ( String currentSupport : supports.keySet() ) {
-			if ( Support.contains(args, currentSupport) ) {
-				for ( String arg : supports.get(currentSupport) ) {
+		for (String currentSupport : supports.keySet()) {
+			if (Support.contains(args, currentSupport)) {
+				for (String arg : supports.get(currentSupport)) {
 					result.addArg(arg);
 					result.addDefeat(currentSupport, arg);
 				}
 			}
 		}
-		for ( String currentSupported : supportedBy.keySet() ) {
-			if ( Support.contains(args, currentSupported) ) {
-				for ( String arg : supportedBy.get(currentSupported) ) {
+		for (String currentSupported : supportedBy.keySet()) {
+			if (Support.contains(args, currentSupported)) {
+				for (String arg : supportedBy.get(currentSupported)) {
 					result.addArg(arg);
 					result.addDefeat(arg, currentSupported);
 				}
@@ -675,16 +668,16 @@ public class PrBAF extends BAF {
 		}
 		return result;
 	}
-	
+
 	public double computePrAAF(ArgSet set, SemanticsType aafsem) {
 		// calculating p1 and p2
 		double p1 = 1;
 		double p2 = 1;
-		for ( String arg : set ) {
+		for (String arg : set) {
 			p1 *= argProb.get(arg);
-			if ( defProb.get(arg) != null ) {
-				for ( String currentDefeated : defProb.get(arg).keySet() ) {
-					if ( set.contains(currentDefeated) ) {
+			if (defProb.get(arg) != null) {
+				for (String currentDefeated : defProb.get(arg).keySet()) {
+					if (set.contains(currentDefeated)) {
 						p2 *= defProb.get(arg).get(currentDefeated);
 					}
 				}
@@ -692,38 +685,37 @@ public class PrBAF extends BAF {
 		}
 		// calculating p3
 		double p3 = 1;
-		if ( aafsem == SemanticsType.st ) {
-			for ( String arg : args ) {
-				if ( !set.contains(arg) ) {
+		if (aafsem == SemanticsType.st) {
+			for (String arg : args) {
+				if (!set.contains(arg)) {
 					double pArg = argProb.get(arg);
 					// calculating p31
-					double p31 = ( 1 -  pArg );
+					double p31 = (1 - pArg);
 					// calculating p32
 					double prod32 = 1;
-					for ( String currentDefeater : defeats.keySet() ) {
-						if ( set.contains(currentDefeater) ) {
-							for ( String defeated : defeats.get(currentDefeater) ) {
-								prod32 *= ( 1 - defProb.get(currentDefeater).get(defeated) );
+					for (String currentDefeater : defeats.keySet()) {
+						if (set.contains(currentDefeater)) {
+							for (String defeated : defeats.get(currentDefeater)) {
+								prod32 *= (1 - defProb.get(currentDefeater).get(defeated));
 							}
 						}
 					}
 					double p32 = pArg * (1 - prod32);
-					p3 *= ( p31 + p32 );
+					p3 *= (p31 + p32);
 				}
 			}
-		}
-		else {
-			for ( String arg : args ) {
-				if ( !set.contains(arg) ) {
+		} else {
+			for (String arg : args) {
+				if (!set.contains(arg)) {
 					double pArg = argProb.get(arg);
 					// calculating p31
-					double p31 = ( 1 - pArg );
+					double p31 = (1 - pArg);
 					// calculating p32
 					double prod32 = 1;
-					for ( String currentDefeated : defeatedBy.keySet() ) {
-						if ( set.contains(currentDefeated) ) {
-							for ( String defeater : defeatedBy.get(currentDefeated) ) {
-								prod32 *= ( 1 - defProb.get(defeater).get(currentDefeated) );
+					for (String currentDefeated : defeatedBy.keySet()) {
+						if (set.contains(currentDefeated)) {
+							for (String defeater : defeatedBy.get(currentDefeated)) {
+								prod32 *= (1 - defProb.get(defeater).get(currentDefeated));
 							}
 						}
 					}
@@ -731,42 +723,39 @@ public class PrBAF extends BAF {
 					// calculating p33
 					double prod331 = prod32;
 					double prod332 = 1;
-					for ( String currentDefeater : defeats.keySet() ) {
-						if ( set.contains(currentDefeater) ) {
-							for ( String defeated : defeats.get(currentDefeater) ) {
-								prod332 *= ( 1 - defProb.get(currentDefeater).get(defeated) );
+					for (String currentDefeater : defeats.keySet()) {
+						if (set.contains(currentDefeater)) {
+							for (String defeated : defeats.get(currentDefeater)) {
+								prod332 *= (1 - defProb.get(currentDefeater).get(defeated));
 							}
 						}
 					}
-					double p33 = pArg * ( 1 - prod331 ) * ( 1 - prod332 );
-					p3 *= ( p31 + p32 + p33 );
+					double p33 = pArg * (1 - prod331) * (1 - prod332);
+					p3 *= (p31 + p32 + p33);
 				}
 			}
 		}
 		return p1 * p2 * p3;
 	}
 
-	public double calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 
+	public double calculatePr(ArgSet args, List<support.Pair> pairs) { // VERIFY
 		double termA = 1;
-		for ( String arg : argProb.keySet() ) {
-			if ( args.contains(arg) ) {
+		for (String arg : argProb.keySet()) {
+			if (args.contains(arg)) {
 				termA *= argProb.get(arg);
-			}
-			else {
+			} else {
 				termA *= (1 - argProb.get(arg));
 			}
 		}
 		double termB = 1;
-		for ( support.Pair currentR_e : pairs ) {
-			if ( Support.contains(args, currentR_e) ) {
+		for (support.Pair currentR_e : pairs) {
+			if (Support.contains(args, currentR_e)) {
 				termB *= currentR_e.getProbability();
-			}
-			else {
+			} else {
 				termB *= (1 - currentR_e.getProbability());
 			}
 		}
 		return termA * termB;
 	}
-	
 
 }
