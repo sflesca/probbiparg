@@ -565,22 +565,28 @@ public class PrBAF extends BAF {
 		return false;
 	}
 
-	public PrBAF contract(ArgSet args, List<support.Pair> pairs) { //VERIFY 
+	public PrBAF contract(ArgSet args, List<support.Pair> pairs, ArgSet args1, List<support.Pair> pairs1) { //VERIFY 
 		PrBAF result = copy();
 		for ( support.Pair currentPair : pairs ) {
 			if ( result.defeats.containsKey(currentPair.getA()) ) {
-				if ( defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
+				if ( result.defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
 					result.addDefeat(currentPair.getA(), currentPair.getB(), 1);
 				}
-				else {
+			}
+			if ( result.supports.containsKey(currentPair.getA()) ) {
+				if ( result.supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
+					result.addSupport(currentPair.getA(), currentPair.getB(), 1);
+				}
+			}
+		}
+		for ( support.Pair currentPair : pairs1 ) {
+			if ( result.defeats.containsKey(currentPair.getA()) ) {
+				if ( result.defeats.get(currentPair.getA()).contains(currentPair.getB()) ) {
 					result.removeDefeat(currentPair.getA(), currentPair.getB());
 				}
 			}
 			if ( result.supports.containsKey(currentPair.getA()) ) {
-				if ( supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
-					result.addSupport(currentPair.getA(), currentPair.getB(), 1);
-				}
-				else {
+				if ( result.supports.get(currentPair.getA()).contains(currentPair.getB()) ) {
 					result.removeSupport(currentPair.getA(), currentPair.getB());
 				}
 			}
