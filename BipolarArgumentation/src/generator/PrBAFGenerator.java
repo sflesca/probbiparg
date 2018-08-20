@@ -56,7 +56,7 @@ public class PrBAFGenerator {
 
 	static public PrBAF readPrBA(InputStream f) {
 		PrBAF prbaf = new PrBAF();
-		Scanner sc = new Scanner(System.in);
+		Scanner sc = new Scanner(f);
 		int numarg = sc.nextInt();
 		for (int i = 0; i < numarg; i++) {
 			String arg = sc.next();
