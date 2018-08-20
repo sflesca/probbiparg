@@ -674,7 +674,10 @@ public class PrBAF extends BAF {
 		double p1 = 1;
 		double p2 = 1;
 		for (String arg : set) {
-			p1 *= argProb.get(arg);
+			if(argProb.get(arg)!=null)
+				p1 *= argProb.get(arg);
+			else
+				p1 *= 0;
 			if (defProb.get(arg) != null) {
 				for (String currentDefeated : defProb.get(arg).keySet()) {
 					if (set.contains(currentDefeated)) {
