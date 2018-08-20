@@ -31,23 +31,23 @@ public class TestImprovedPrBAF {
 		// elaborating
 		long startTime = System.currentTimeMillis();
 		System.out.println("Calculating...");
-		float result = elaborate(baf, S, sem);
+		double result = elaborate(baf, S, sem);
 		long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Completed!");
 		System.out.println("Result: " + result);
 		System.out.println("Computation Time: " + elapsedTime + " ms");
 	}
 
-	private static float elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
-		float pr = 0.0f;
+	private static double elaborate(PrBAF baf, ArgSet S, SemanticsType sem) {
+		double pr = 0.0f;
 		List<String> Ae = baf.computeAe();
 		List<Pair> Re = baf.computeRe(Ae);
 		for ( ArgSet currentArgumentSubset : Support.getAllArgumentsSubsets(Ae) ) {
 			List<Pair> rightPairs = Support.filterPairs(Re, currentArgumentSubset);
 			for ( List<Pair> currentPairSubset : Support.getAllPairsSubsets(rightPairs) ) {
-				float prPrime = 0.0f;
+				double prPrime = 0.0f;
 				PrBAF fStar = baf.contract(currentArgumentSubset, currentPairSubset);
-				float prStar = fStar.calculatePr(currentArgumentSubset, currentPairSubset); 
+				double prStar = fStar.calculatePr(currentArgumentSubset, currentPairSubset); 
 				PrBAF fPrime = fStar.complete(currentArgumentSubset, currentPairSubset);
 				if ( sem == SemanticsType.s_ad ) { 
 					if ( !fPrime.safe(S) ) {
@@ -70,7 +70,7 @@ public class TestImprovedPrBAF {
 				else {
 					aafsem = SemanticsType.ad; 
 				}
-				float prSigned = fSigned.computePrAAF(aafsem);
+				double prSigned = fSigned.computePrAAF(S, aafsem);
 				pr += prStar * prPrime * prSigned;
 			}
 		}

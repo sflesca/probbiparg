@@ -670,28 +670,78 @@ public class PrBAF extends BAF {
 		return result;
 	}
 	
-	public float computePrAAF(SemanticsType aafsem) {
-		// calculating p1
-		float p1 = 1;
-		for ( String arg : args ) {
+	public double computePrAAF(ArgSet set, SemanticsType aafsem) {
+		// calculating p1 and p2
+		double p1 = 1;
+		double p2 = 1;
+		for ( String arg : set ) {
 			p1 *= argProb.get(arg);
+			if ( defProb.get(arg) != null ) {
+				for ( String currentDefeated : defProb.get(arg).keySet() ) {
+					if ( set.contains(currentDefeated) ) {
+						p2 *= defProb.get(arg).get(currentDefeated);
+					}
+				}
+			}
 		}
-		// calculating p2
-		float p2 = 1;
-		//TODO
 		// calculating p3
-		float p3 = 1;
+		double p3 = 1;
 		if ( aafsem == SemanticsType.st ) {
-
+			for ( String arg : args ) {
+				if ( !set.contains(arg) ) {
+					double pArg = argProb.get(arg);
+					// calculating p31
+					double p31 = ( 1 -  pArg );
+					// calculating p32
+					double prod32 = 1;
+					for ( String currentDefeater : defeats.keySet() ) {
+						if ( set.contains(currentDefeater) ) {
+							for ( String defeated : defeats.get(currentDefeater) ) {
+								prod32 *= ( 1 - defProb.get(currentDefeater).get(defeated) );
+							}
+						}
+					}
+					double p32 = pArg * (1 - prod32);
+					p3 *= ( p31 + p32 );
+				}
+			}
 		}
 		else {
-			
+			for ( String arg : args ) {
+				if ( !set.contains(arg) ) {
+					double pArg = argProb.get(arg);
+					// calculating p31
+					double p31 = ( 1 - pArg );
+					// calculating p32
+					double prod32 = 1;
+					for ( String currentDefeated : defeatedBy.keySet() ) {
+						if ( set.contains(currentDefeated) ) {
+							for ( String defeater : defeatedBy.get(currentDefeated) ) {
+								prod32 *= ( 1 - defProb.get(defeater).get(currentDefeated) );
+							}
+						}
+					}
+					double p32 = pArg * prod32;
+					// calculating p33
+					double prod331 = prod32;
+					double prod332 = 1;
+					for ( String currentDefeater : defeats.keySet() ) {
+						if ( set.contains(currentDefeater) ) {
+							for ( String defeated : defeats.get(currentDefeater) ) {
+								prod332 *= ( 1 - defProb.get(currentDefeater).get(defeated) );
+							}
+						}
+					}
+					double p33 = pArg * ( 1 - prod331 ) * ( 1 - prod332 );
+					p3 *= ( p31 + p32 + p33 );
+				}
+			}
 		}
 		return p1 * p2 * p3;
 	}
 
-	public float calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 
-		float termA = 1;
+	public double calculatePr(ArgSet args, List<support.Pair> pairs) { //VERIFY 
+		double termA = 1;
 		for ( String arg : argProb.keySet() ) {
 			if ( args.contains(arg) ) {
 				termA *= argProb.get(arg);
@@ -700,7 +750,7 @@ public class PrBAF extends BAF {
 				termA *= (1 - argProb.get(arg));
 			}
 		}
-		float termB = 1;
+		double termB = 1;
 		for ( support.Pair currentR_e : pairs ) {
 			if ( Support.contains(args, currentR_e) ) {
 				termB *= currentR_e.getProbability();
