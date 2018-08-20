@@ -1,12 +1,17 @@
 package structures;
 
 import java.util.HashSet;
+import java.util.List;
 
 public class ArgSet extends HashSet<String> {
 	private static final long serialVersionUID = 1L;
 
 	
 	public ArgSet (ArgSet set) {
+        super (set);
+    }
+	
+	public ArgSet (List<String> set) {
         super (set);
     }
 

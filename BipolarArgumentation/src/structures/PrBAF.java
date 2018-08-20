@@ -557,7 +557,7 @@ public class PrBAF extends BAF {
 		return false;
 	}
 
-	public PrBAF contract(ArgSet args, List<support.Pair> pairs, ArgSet args1, List<support.Pair> pairs1) { // VERIFY
+	public PrBAF contract(List<String> args, List<support.Pair> pairs, List<String> args1, List<support.Pair> pairs1) {
 		PrBAF result = copy();
 		for (support.Pair currentPair : pairs) {
 			if (result.defeats.containsKey(currentPair.getA())) {
@@ -583,20 +583,20 @@ public class PrBAF extends BAF {
 				}
 			}
 		}
-		for (String arg : args)
+		for (String arg : args) {
 			if (result.args.contains(arg)) {
 				result.argProb.put(arg, 1.0);
 			}
+		}
 		for (String arg1 : args1) {
 			if (result.args.contains(arg1)) {
 				result.removeArg(arg1);
 			}
 		}
-
 		return result;
 	}
 
-	public PrBAF complete(ArgSet args, List<support.Pair> pairs) { // VERIFY
+	public PrBAF complete(List<String> args, List<support.Pair> pairs) { // VERIFY
 		PrBAF result = new PrBAF();
 		result.args = this.args;
 		result.supports = this.supports;
@@ -629,7 +629,7 @@ public class PrBAF extends BAF {
 		return result;
 	}
 
-	private BAF cert(ArgSet args) { // VERIFY
+	private BAF cert(List<String> args) { // VERIFY
 		BAF result = new BAF();
 		for (String arg : args) {
 			result.addArg(arg);
@@ -738,7 +738,7 @@ public class PrBAF extends BAF {
 		return p1 * p2 * p3;
 	}
 
-	public double calculatePr(ArgSet args, List<support.Pair> pairs) { // VERIFY
+	public double calculatePr(List<String> args, List<support.Pair> pairs) { // VERIFY
 		double termA = 1;
 		for (String arg : argProb.keySet()) {
 			if (args.contains(arg)) {
@@ -757,5 +757,6 @@ public class PrBAF extends BAF {
 		}
 		return termA * termB;
 	}
+	
 
 }

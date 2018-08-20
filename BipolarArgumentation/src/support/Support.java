@@ -4,17 +4,16 @@ package support;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import structures.ArgSet;
 
 
 public class Support {
 	
 	
-	public static List<ArgSet> getAllArgumentsSubsets(List<String> args) {
-		List<ArgSet> result = new LinkedList<ArgSet>();
+	public static List<List<String>> getAllArgumentsSubsets(List<String> args) {
+		List<List<String>> result = new LinkedList<>();
 		int size = args.size();
 	    for ( int i = 0; i < (1 << size); i ++ ) {
-	    		ArgSet current = new ArgSet();
+	    		List<String> current = new ArrayList<>();
 	    		for ( int j = 0; j < size; j ++ ) {
 	    			if ( (i & (1 << j)) > 0 ) {
 	    				current.add(args.get(j));
@@ -40,7 +39,7 @@ public class Support {
 		return result;
 	}
 	
-	public static boolean contains(ArgSet arguments, Pair pair) {
+	public static boolean contains(List<String> arguments, Pair pair) {
 		for ( String arg : arguments ) {
 			if ( arg.equals(pair.getA()) || arg.equals(pair.getB()) ) {
 				return true;
@@ -49,7 +48,7 @@ public class Support {
 		return false;
 	}
 	
-	public static boolean contains(ArgSet arguments, String value) {
+	public static boolean contains(List<String> arguments, String value) {
 		for ( String arg : arguments ) {
 			if ( arg.equals(value) ) {
 				return true;
@@ -58,11 +57,31 @@ public class Support {
 		return false;
 	}
 
-	public static List<Pair> filterPairs(List<Pair> pairs, ArgSet arguments) {
+	public static List<Pair> filterPairs(List<Pair> pairs, List<String> arguments) {
 		List<Pair> result = new ArrayList<>();
 		for ( Pair current : pairs ) {
 			if ( arguments.contains(current.getA()) && arguments.contains(current.getB()) ) {
 				result.add(current);
+			}
+		}
+		return result;
+	}
+	
+	public static List<String> generateComplemetaryArgumentSubset(List<String> allArgs, List<String> complementary) {
+		List<String> result = new ArrayList<>();
+		for ( String currentArg : allArgs ) {
+			if ( !complementary.contains(currentArg) ) {
+				result.add(currentArg);
+			}
+		}
+		return result;
+	}
+	
+	public static List<Pair> generateComplemetaryPairsSubset(List<Pair> allPairs, List<Pair> complementary) {
+		List<Pair> result = new ArrayList<>();
+		for ( Pair currentPair : allPairs ) {
+			if ( !complementary.contains(currentPair) ) {
+				result.add(currentPair);
 			}
 		}
 		return result;

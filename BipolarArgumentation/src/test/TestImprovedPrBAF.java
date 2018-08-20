@@ -42,8 +42,8 @@ public class TestImprovedPrBAF {
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Completed!");
 			System.out.println("Result: " + result);
-			System.out.println("Computation Time: " + elapsedTime + " ms");		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Computation Time: " + elapsedTime + " ms");		
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -53,11 +53,11 @@ public class TestImprovedPrBAF {
 		double pr = 0.0f;
 		List<String> Ae = baf.computeAe();
 		List<Pair> Re = baf.computeRe(Ae);
-		for ( ArgSet currentArgumentSubset : Support.getAllArgumentsSubsets(Ae) ) {
+		for ( List<String> currentArgumentSubset : Support.getAllArgumentsSubsets(Ae) ) {
 			List<Pair> rightPairs = Support.filterPairs(Re, currentArgumentSubset);
 			for ( List<Pair> currentPairSubset : Support.getAllPairsSubsets(rightPairs) ) {
 				double prPrime = 0.0f;
-				PrBAF fStar = baf.contract(currentArgumentSubset, currentPairSubset);
+				PrBAF fStar = baf.contract(currentArgumentSubset, currentPairSubset, Support.generateComplemetaryArgumentSubset(Ae, currentArgumentSubset), Support.generateComplemetaryPairsSubset(Re, currentPairSubset));
 				double prStar = fStar.calculatePr(currentArgumentSubset, currentPairSubset); 
 				PrBAF fPrime = fStar.complete(currentArgumentSubset, currentPairSubset);
 				if ( sem == SemanticsType.s_ad ) { 
