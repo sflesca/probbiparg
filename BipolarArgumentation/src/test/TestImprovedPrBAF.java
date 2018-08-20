@@ -7,6 +7,7 @@ import java.util.List;
 
 import generator.PrBAFGenerator;
 import structures.ArgSet;
+import structures.BAF;
 import structures.PrBAF;
 import support.Constants.SemanticsType;
 import support.Pair;
@@ -31,7 +32,7 @@ public class TestImprovedPrBAF {
 //		baf.addSupport("a", "b", 1);
 //		baf.addSupport("c", "d", 1);
 		try {
-			FileInputStream stream = new FileInputStream("prbafs/14prbaf-2.txt");
+			FileInputStream stream = new FileInputStream("prbafs/16prbaf-9.txt");
 			PrBAF baf = PrBAFGenerator.readPrBA(stream);
 			ArgSet S = new ArgSet("a0", "a1");
 			SemanticsType sem = SemanticsType.c_ad;
@@ -42,7 +43,22 @@ public class TestImprovedPrBAF {
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			System.out.println("Completed!");
 			System.out.println("Result: " + result);
-			System.out.println("Computation Time: " + elapsedTime + " ms");		
+			System.out.println("Computation Time: " + elapsedTime + " ms");
+/*			
+			System.out.println("TUTTI I POSSIBILI MONDI");
+			long t = System.currentTimeMillis();
+			double prob = 0;
+			int k = 0;
+			for (BAF baffo : baf.pw()) {
+//				System.out.println(baffo);
+				double p = baf.computeProb(baffo);
+				prob += p;
+			}
+			long t3 = System.currentTimeMillis();
+			System.out.println("Tempo impiegato al calcolo " + (t3 - t) + " ms");
+			System.out.println("Prob totale :" + prob);
+			System.out.println("=================================");
+			*/
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

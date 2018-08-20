@@ -89,7 +89,7 @@ public class PrBAFGenerator {
 		int[] numargs = { 6, 8, 10, 12, 14, 16, 18, 20 };
 		for (int i : numargs) {
 			for (int j = 0; j < 10; j++) {
-				PrBAF prbaf = generate(i, .2, .03);
+				PrBAF prbaf = generate(i, 2.0/i, 0.5/i);
 				try {
 					PrintWriter out = new PrintWriter("prbafs/" + i + "prbaf-"+j+".txt", "UTF-8");
 					printPrBAF(prbaf, out);
