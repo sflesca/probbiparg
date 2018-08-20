@@ -31,7 +31,7 @@ public class TestImprovedPrBAF {
 //		baf.addSupport("a", "b", 1);
 //		baf.addSupport("c", "d", 1);
 		try {
-			FileInputStream stream = new FileInputStream("prbafs/10prbaf-2.txt");
+			FileInputStream stream = new FileInputStream("prbafs/14prbaf-2.txt");
 			PrBAF baf = PrBAFGenerator.readPrBA(stream);
 			ArgSet S = new ArgSet("a0", "a1");
 			SemanticsType sem = SemanticsType.c_ad;
