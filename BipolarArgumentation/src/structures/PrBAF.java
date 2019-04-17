@@ -500,16 +500,16 @@ public class PrBAF extends BAF {
 	public PrBAF copy() {
 		PrBAF baf = new PrBAF();
 		for (String s : getArgs()) {
-			baf.addArg(s);
+			baf.addArg(s, this.argProb.get(s));
 		}
 		for (String a : getArgs()) {
 			for (String b : getDefeats(a)) {
-				baf.addDefeat(a, b);
+				baf.addDefeat(a, b, defProb.get(a).get(b));
 			}
 		}
 		for (String a : getArgs()) {
 			for (String b : getSupports(a)) {
-				baf.addSupport(a, b);
+				baf.addSupport(a, b, supProb.get(a).get(b));
 			}
 		}
 		return baf;
@@ -745,19 +745,26 @@ public class PrBAF extends BAF {
 		double termA = 1;
 		for (String arg : argProb.keySet()) {
 			if (args.contains(arg)) {
+				System.out.println("if- get: " + argProb.get(arg));
 				termA *= argProb.get(arg);
-			} else {
+			} 
+			else {
+				System.out.println("else- get: " + argProb.get(arg));
 				termA *= (1 - argProb.get(arg));
 			}
+			System.out.println("termA: " + termA);
 		}
 		double termB = 1;
 		for (support.Pair currentR_e : pairs) {
 			if (Support.contains(args, currentR_e)) {
 				termB *= currentR_e.getProbability();
-			} else {
+			} 
+			else {
 				termB *= (1 - currentR_e.getProbability());
 			}
 		}
+		System.out.println("A: " + termA); //termA always 0
+		System.out.println("B: " + termB);
 		return termA * termB;
 	}
 	

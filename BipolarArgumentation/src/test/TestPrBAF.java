@@ -1,7 +1,10 @@
 package test;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 
+import generator.PrBAFGenerator;
 import structures.ArgSet;
 import structures.BAF;
 import structures.PrBAF;
@@ -9,7 +12,7 @@ import structures.PrBAF;
 public class TestPrBAF {
 	public static void main(String[] args) {
 
-		PrBAF baf = new PrBAF();
+		/*PrBAF baf = new PrBAF();
 
 		baf.addArg("a", 1);
 		baf.addArg("b", 1);
@@ -25,7 +28,28 @@ public class TestPrBAF {
 		baf.addDefeat("f", "d", 1);
 		baf.addSupport("a", "b", 1);
 		baf.addSupport("c", "d", 1);
-		ArgSet ae = new ArgSet("a", "e");
+		ArgSet ae = new ArgSet("a", "e");*/
+		
+		
+		
+		FileInputStream stream = null;
+		try {
+			stream = new FileInputStream("/Users/francesco/Software/Java/BipolarArgumentation/BipolarArgumentation/prbafs/6prbaf-0.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		PrBAF baf = PrBAFGenerator.readPrBA(stream);
+		ArgSet ae = new ArgSet("a0", "a1");
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		double prob = 0;
 		long t = System.currentTimeMillis();
 		System.out.println("TUTTI I POSSIBILI MONDI");
@@ -60,10 +84,10 @@ public class TestPrBAF {
 		}
 		System.err.println("N :" + (k - 1) + " Prob Cumulativa :" + String.format("%1.2f", prob));
 		System.out.println("---------------------");
-		System.out.println("Tempo impiegato al calcolo con iteratore a complessità spaziale esponenziale " + (t3 - t) + " ms");
+		System.out.println("Tempo impiegato al calcolo con iteratore a complessitï¿½ spaziale esponenziale " + (t3 - t) + " ms");
 		long t4 = System.currentTimeMillis();
 
-		System.out.println("Tempo impiegato al calcolo con iteratore a complessità spaziale costante  " + (t4 - t2) + " ms");
+		System.out.println("Tempo impiegato al calcolo con iteratore a complessitï¿½ spaziale costante  " + (t4 - t2) + " ms");
 		System.out.printf("%1.3f\n", (t3 - t) * 1.0 / (t4 - t2));
 		System.out.println("=================================");
 		System.out.println("MONDI CON PROBABILITA' NON NULLA");
